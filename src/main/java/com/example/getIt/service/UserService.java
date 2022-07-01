@@ -55,4 +55,9 @@ public class UserService {
     public UserEntity isHaveEmail(String email) {
         return this.userRepository.findByEmail(email);
     }
+
+    public UserDTO.User getUser(Long userIdx) {
+        UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
+        return new UserDTO.User(userEntity);
+    }
 }
