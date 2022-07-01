@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "test")
 public class TestController {
     @GetMapping("/log")
-    public String getUserInfo(){
+    public String getTest(){
         return "Success Test";
     }
 }
