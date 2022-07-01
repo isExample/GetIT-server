@@ -24,4 +24,12 @@ public class UserService {
         userRepository.save(userEntity);
         return userEntity;
     }
+
+    public UserEntity isHaveNickName(String nickName) {
+        return this.userRepository.findByNickname(nickName);
+    }
+
+    public UserEntity isHaveEmail(String email) {
+        return this.userRepository.findByEmail(email);
+    }
 }
