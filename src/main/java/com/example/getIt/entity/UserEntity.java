@@ -1,18 +1,61 @@
 package com.example.getIt.entity;
 
+import com.example.getIt.util.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Getter
-@Setter
-public class UserEntity {
+@Table(name = "user")
+@NoArgsConstructor
+@DynamicInsert
+public class UserEntity extends BaseEntity {
     @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userIdx;
 
+    @Column(nullable = false, length = 100)
+    private String name;
+
+    @Column(nullable = false, length = 100)
+    private String nickname;
+
+    @Column(nullable = false, length = 100)
+    private String email;
+
+    @JsonIgnore //json 불러오지 않기
+    @Column(nullable = false)
+    private String password;
+
+    @Column(nullable = true)
+    private Integer birthday;
+
+    @Column(nullable = true)
+    private String job;
+
+    @Column(nullable = true)
+    private String profileImgUrl;
+
+    @Column(columnDefinition = "varchar(10) default 'active'")
+    private String status;
+
+    @Builder
+    public UserEntity(String name, String nickName, String email, String password, Integer birthday, String job, String profileImgUrl, String status){
+        this.name = name;
+        this.nickname = nickName;
+        this.email = email;
+        this.password = password;
+        this.birthday = birthday;
+        this.job = job;
+        this.profileImgUrl = profileImgUrl;
+        this.status = status;
+    }
 }
