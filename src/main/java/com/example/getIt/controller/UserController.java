@@ -53,9 +53,13 @@ public class UserController {
     //회원 조회
     @ResponseBody
     @GetMapping("/{userIdx}")
-    public BaseResponse<UserDTO.User> getUser(@PathVariable("userIdx")Long userIdx){
-        UserDTO.User userInfo = userService.getUser(userIdx);
-        return new BaseResponse<>(userInfo);
+    public BaseResponse<UserDTO.GetUserRes> getUser(@PathVariable("userIdx")Long userIdx){
+        try {
+            UserDTO.GetUserRes userInfo = userService.getUser(userIdx);
+            return new BaseResponse<>(userInfo);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
 
     }
 

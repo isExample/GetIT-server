@@ -22,18 +22,6 @@ public class UserDTO {
 
         public User(){}
 
-        public User(UserEntity userEntity) {
-            this.userIdx = userEntity.getUserIdx();
-            this.name = userEntity.getName();
-            this.nickName = userEntity.getNickname();
-            this.birthday = userEntity.getBirthday();
-            this.job = userEntity.getJob();
-            this.email = userEntity.getEmail();
-            this.password = userEntity.getPassword();
-            this.status = userEntity.getStatus();
-
-
-        }
     }
 
     @Getter
@@ -42,5 +30,19 @@ public class UserDTO {
     public static class PostUserRes {
         private String jwt;
         private Long userIdx;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetUserRes {
+        private Long userIdx;
+        private String email;
+        private String password;
+        private String name;
+        private String nickName;
+        private Integer birthday;
+        private String job;
+        private String status;
     }
 }

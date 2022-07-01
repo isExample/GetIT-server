@@ -56,8 +56,22 @@ public class UserService {
         return this.userRepository.findByEmail(email);
     }
 
-    public UserDTO.User getUser(Long userIdx) {
-        UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
-        return new UserDTO.User(userEntity);
+    public UserDTO.GetUserRes getUser(Long userIdx) throws BaseException {
+        try{
+            UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
+            return new UserDTO.GetUserRes(
+                    userEntity.getUserIdx(),
+                    userEntity.getEmail(),
+                    userEntity.getPassword(),
+                    userEntity.getName(),
+                    userEntity.getNickname(),
+                    userEntity.getBirthday(),
+                    userEntity.getJob(),
+                    userEntity.getStatus()
+            );
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
     }
 }
