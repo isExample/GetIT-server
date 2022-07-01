@@ -1,5 +1,6 @@
 package com.example.getIt.entity;
 
+import com.example.getIt.util.BaseEntity;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn
 @Table(name = "Product")
-public class ProductEntity {
+public class ProductEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productIdx;
@@ -37,7 +38,7 @@ public class ProductEntity {
     private String lowestprice;
 
     @ManyToOne
-    @JoinColumn(name = "webIdx", referencedColumnName = "webIdx")
+    @JoinColumn(name = "webIdx")
     private WebsiteEntity website;
 
 }
