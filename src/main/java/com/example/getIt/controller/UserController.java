@@ -22,10 +22,10 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/sign-in")
-    public BaseResponse<String> signIn(@RequestBody UserDTO.User user){
+    public BaseResponse<UserDTO.PostUserRes> signIn(@RequestBody UserDTO.User user){
         try {
             if(user.getEmail() == null || user.getName() == null
-            || user.getNickName() == null || user.getPassword() == null){
+                    || user.getNickName() == null || user.getPassword() == null){
                 return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY);
             }
 
@@ -41,9 +41,8 @@ public class UserController {
                 return new BaseResponse<>(BaseResponseStatus.DUPLICATE_NICKNAME);
             }
 
-
-            UserEntity userEntity = this.userService.signIn(user);
-            return new BaseResponse<>(BaseResponseStatus.SUCCESS);
+            UserDTO.PostUserRes postUserRes = this.userService.signIn(user);
+            return new BaseResponse<>(postUserRes);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -21,4 +21,12 @@ public class UserDTO {
 
         public User(){}
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class PostUserRes {
+        private String jwt;
+        private Long userIdx;
+    }
 }
