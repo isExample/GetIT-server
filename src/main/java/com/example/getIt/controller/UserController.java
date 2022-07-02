@@ -24,8 +24,7 @@ public class UserController {
     @GetMapping("/sign-in")
     public BaseResponse<UserDTO.PostUserRes> signIn(@RequestBody UserDTO.User user){
         try {
-            if(user.getEmail() == null || user.getName() == null
-                    || user.getNickName() == null || user.getPassword() == null){
+            if(user.getEmail() == null || user.getNickName() == null || user.getPassword() == null){
                 return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY);
             }
 
@@ -53,9 +52,9 @@ public class UserController {
     //회원 조회
     @ResponseBody
     @GetMapping("/{userIdx}")
-    public BaseResponse<UserDTO.GetUserRes> getUser(@PathVariable("userIdx")Long userIdx){
+    public BaseResponse<UserDTO.User> getUser(@PathVariable("userIdx")Long userIdx){
         try {
-            UserDTO.GetUserRes userInfo = userService.getUser(userIdx);
+            UserDTO.User userInfo = userService.getUser(userIdx);
             return new BaseResponse<>(userInfo);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

@@ -33,7 +33,6 @@ public class UserService {
         UserEntity userEntity = UserEntity.builder()
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .name(user.getName())
                 .nickName(user.getNickName())
                 .birthday(user.getBirthday())
                 .build();
@@ -41,7 +40,7 @@ public class UserService {
 
         try{
             String jwt = this.jwtService.createJwt(Math.toIntExact(userEntity.getUserIdx()));
-            return new UserDTO.PostUserRes(jwt, userEntity.getUserIdx());
+            return new UserDTO.PostUserRes(jwt);
         }catch(Exception e){
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
@@ -56,14 +55,13 @@ public class UserService {
         return this.userRepository.findByEmail(email);
     }
 
-    public UserDTO.GetUserRes getUser(Long userIdx) throws BaseException {
+    public UserDTO.User getUser(Long userIdx) throws BaseException {
         try{
             UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
-            return new UserDTO.GetUserRes(
+            return new UserDTO.User(
                     userEntity.getUserIdx(),
                     userEntity.getEmail(),
                     userEntity.getPassword(),
-                    userEntity.getName(),
                     userEntity.getNickname(),
                     userEntity.getBirthday(),
                     userEntity.getJob(),

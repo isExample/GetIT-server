@@ -14,7 +14,6 @@ public class UserDTO {
         private Long userIdx;
         private String email;
         private String password;
-        private String name;
         private String nickName;
         private Integer birthday;
         private String job;
@@ -29,20 +28,6 @@ public class UserDTO {
     @AllArgsConstructor
     public static class PostUserRes {
         private String jwt;
-        private Long userIdx;
     }
 
-    @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class GetUserRes {
-        private Long userIdx;
-        private String email;
-        private String password;
-        private String name;
-        private String nickName;
-        private Integer birthday;
-        private String job;
-        private String status;
-    }
 }

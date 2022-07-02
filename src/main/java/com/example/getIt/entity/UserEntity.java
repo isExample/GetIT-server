@@ -23,9 +23,6 @@ public class UserEntity extends BaseEntity {
     private Long userIdx;
 
     @Column(nullable = false, length = 100)
-    private String name;
-
-    @Column(nullable = false, length = 100)
     private String nickname;
 
     @Column(nullable = false, length = 100)
@@ -48,8 +45,7 @@ public class UserEntity extends BaseEntity {
     private String status;
 
     @Builder
-    public UserEntity(String name, String nickName, String email, String password, Integer birthday, String job, String profileImgUrl, String status){
-        this.name = name;
+    public UserEntity(String nickName, String email, String password, Integer birthday, String job, String profileImgUrl, String status){
         this.nickname = nickName;
         this.email = email;
         this.password = password;
