@@ -1,6 +1,7 @@
 package com.example.getIt.DTO;
 
 
+import com.example.getIt.entity.UserEntity;
 import lombok.*;
 
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class UserDTO {
         private String status;
 
         public User(){}
+
     }
 
     @Getter
@@ -28,5 +30,19 @@ public class UserDTO {
     public static class PostUserRes {
         private String jwt;
         private Long userIdx;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetUserRes {
+        private Long userIdx;
+        private String email;
+        private String password;
+        private String name;
+        private String nickName;
+        private Integer birthday;
+        private String job;
+        private String status;
     }
 }

@@ -55,4 +55,23 @@ public class UserService {
     public UserEntity isHaveEmail(String email) {
         return this.userRepository.findByEmail(email);
     }
+
+    public UserDTO.GetUserRes getUser(Long userIdx) throws BaseException {
+        try{
+            UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
+            return new UserDTO.GetUserRes(
+                    userEntity.getUserIdx(),
+                    userEntity.getEmail(),
+                    userEntity.getPassword(),
+                    userEntity.getName(),
+                    userEntity.getNickname(),
+                    userEntity.getBirthday(),
+                    userEntity.getJob(),
+                    userEntity.getStatus()
+            );
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+
+    }
 }
