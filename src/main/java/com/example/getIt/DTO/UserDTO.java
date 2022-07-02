@@ -4,6 +4,8 @@ package com.example.getIt.DTO;
 import com.example.getIt.entity.UserEntity;
 import lombok.*;
 
+import java.util.List;
+
 @NoArgsConstructor
 public class UserDTO {
     @Setter
@@ -18,7 +20,7 @@ public class UserDTO {
         private Integer birthday;
         private String job;
         private String status;
-
+        private List<ProductDTO.GetProduct> likeProduct;
         public User(){}
 
     }
