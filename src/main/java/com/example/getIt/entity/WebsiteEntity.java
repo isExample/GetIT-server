@@ -18,4 +18,7 @@ public class WebsiteEntity {
     @Column(name = "url", nullable = false, length = 100)
     private String url;
 
+    @ManyToOne
+    @JoinColumn(name = "productIdx")
+    private ProductEntity product;
 }

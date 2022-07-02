@@ -30,4 +30,17 @@ public class ProductController {
         }
     }
 
+    //상품 조회
+    @ResponseBody
+    @GetMapping("/{productIdx}")
+    public BaseResponse<ProductDTO.GetProductRes> getProduct(@PathVariable("productIdx")Long productIdx){
+        try {
+            ProductDTO.GetProductRes productInfo = productService.getProduct(productIdx);
+            return new BaseResponse<>(productInfo);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
 }
