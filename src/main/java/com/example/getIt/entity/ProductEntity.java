@@ -1,44 +1,46 @@
 package com.example.getIt.entity;
 
 import com.example.getIt.util.BaseEntity;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn
-@Table(name = "Product")
+@Table(name = "product")
+@NoArgsConstructor
 public class ProductEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long productIdx;
 
-    @Column(name = "type", nullable = false, length = 10)
+    @Column(nullable = false, length = 10)
     private String type;
 
-    @Column(name = "name", nullable = false, length = 30)
+    @Column(nullable = false, length = 30)
     private String name;
 
-    @Column(name = "brand", nullable = false, length = 20)
+    @Column(nullable = false, length = 20)
     private String brand;
 
-    @Column(name = "image", nullable = false, length = 50)
+    @Column(nullable = false, length = 50)
     private String image;
 
-    @Column(name = "date", nullable = false, length = 10)
+    @Column(nullable = false, length = 10)
     private String date;
 
-    @Column(name = "description", length = 100)
+    @Column(length = 100)
     private String description;
 
-    @Column(name = "lowestprice", length = 20)
+    @Column(length = 20)
     private String lowestprice;
 
-    @ManyToOne
-    @JoinColumn(name = "webIdx")
-    private WebsiteEntity website;
+    @Column(nullable = false, length = 20)
+    private String cpu;
 
+    @Column(nullable = false, length = 10)
+    private String ram;
 }

@@ -12,8 +12,8 @@ public class WebsiteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long webIdx;
 
-    @Column(name = "price", nullable = false, length = 20)
-    private String price;
+    @Column(name = "cost", nullable = false, length = 20)
+    private String cost;
 
     @Column(name = "url", nullable = false, length = 100)
     private String url;
