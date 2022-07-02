@@ -21,25 +21,9 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/sign-in")
+    @PostMapping("/sign-in")
     public BaseResponse<UserDTO.PostUserRes> signIn(@RequestBody UserDTO.User user){
         try {
-            if(user.getEmail() == null || user.getNickName() == null || user.getPassword() == null){
-                return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY);
-            }
-
-            if(!isRegexEmail(user.getEmail())){
-                return new BaseResponse<>(BaseResponseStatus.POST_USERS_INVALID_EMAIL);
-            }
-
-            if(userService.isHaveEmail(user.getEmail()) != null){
-                return new BaseResponse<>(BaseResponseStatus.DUPLICATE_EMAIL);
-            }
-
-            if(userService.isHaveNickName(user.getNickName())!= null){
-                return new BaseResponse<>(BaseResponseStatus.DUPLICATE_NICKNAME);
-            }
-
             UserDTO.PostUserRes postUserRes = this.userService.signIn(user);
             return new BaseResponse<>(postUserRes);
 
@@ -57,6 +41,27 @@ public class UserController {
             UserDTO.User userInfo = userService.getUser(userIdx);
             return new BaseResponse<>(userInfo);
         }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+    @ResponseBody
+    @GetMapping("/login")
+    public BaseResponse<UserDTO.PostUserRes> logIn(@RequestBody UserDTO.User user){
+        try {
+            if(user.getEmail()==null){
+                return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY_NICKNAME);
+            }
+
+            if(user.getPassword()==null){
+                return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY_PASSWORD);
+            }
+            UserDTO.PostUserRes postUserRes = userService.logIn(user);
+
+            return new BaseResponse<>(postUserRes);
+
+        } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
 

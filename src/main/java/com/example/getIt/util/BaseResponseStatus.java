@@ -9,6 +9,10 @@ public enum BaseResponseStatus {
     DUPLICATE_EMAIL(false, 2001, "이메일이 중복되었습니다."),
     EMPTY_JWT(false, 2002, "JWT를 입력해주세요."),
     INVALID_JWT(false, 2003, "유효하지 않은 JWT입니다."),
+    POST_USERS_EMPTY_NICKNAME(false, 2004, "아이디를 입력해주세요."),
+    POST_USERS_EMPTY_PASSWORD(false, 2005, "비밀번호를 입력해주세요."),
+    POST_USERS_INVALID_PASSWORD(false, 2006, "비밀번호가 틀렸습니다."),
+    FAILED_TO_LOGIN(false, 2007, "없는 아이디이거나 비밀번호가 틀렸습니다."),
     /*
     * 4000: [POST]
     * */
