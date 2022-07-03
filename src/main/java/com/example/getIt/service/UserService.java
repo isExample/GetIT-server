@@ -1,7 +1,12 @@
 package com.example.getIt.service;
 
+import com.example.getIt.DTO.ProductDTO;
 import com.example.getIt.DTO.UserDTO;
+import com.example.getIt.entity.ProductEntity;
 import com.example.getIt.entity.UserEntity;
+import com.example.getIt.entity.UserProductEntity;
+import com.example.getIt.repository.ProductRepository;
+import com.example.getIt.repository.UserProductRepository;
 import com.example.getIt.repository.UserRepository;
 import com.example.getIt.util.*;
 //import com.example.getIt.util.JwtService;
@@ -10,16 +15,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.example.getIt.util.ValidationRegex.isRegexEmail;
 
 @Service
 public class UserService {
     private UserRepository userRepository;
+    private UserProductRepository userProductRepository;
+    private ProductRepository productRepository;
 
     private JwtService jwtService;
 
-    public UserService(UserRepository userRepository, JwtService jwtService){
+    public UserService(UserRepository userRepository, UserProductRepository userProductRepository, ProductRepository productRepository, JwtService jwtService){
         this.userRepository = userRepository;
+        this.userProductRepository = userProductRepository;
+        this.productRepository = productRepository;
         this.jwtService = jwtService;
     }
     public UserDTO.PostUserRes signIn(UserDTO.User user) throws BaseException {
@@ -70,6 +82,21 @@ public class UserService {
     public UserDTO.User getUser(Long userIdx) throws BaseException {
         try{
             UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
+            List<UserProductEntity> products = userProductRepository.findAllByUserIdx(userEntity);
+            List<ProductDTO.GetProduct> likeProduct = new ArrayList<>();
+
+            for(UserProductEntity temp : products){
+                ProductEntity likeProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
+                likeProduct.add(new ProductDTO.GetProduct(
+                        likeProductInfo.getProductIdx(),
+                        likeProductInfo.getName(),
+                        likeProductInfo.getBrand(),
+                        likeProductInfo.getType(),
+                        likeProductInfo.getImage(),
+                        likeProductInfo.getLowestprice()
+                ));
+            }
+
             return new UserDTO.User(
                     userEntity.getUserIdx(),
                     userEntity.getEmail(),
@@ -77,9 +104,11 @@ public class UserService {
                     userEntity.getNickname(),
                     userEntity.getBirthday(),
                     userEntity.getJob(),
-                    userEntity.getStatus()
+                    userEntity.getStatus(),
+                    likeProduct
             );
         }catch (Exception e){
+            System.out.println("Error: "+e);
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
 
