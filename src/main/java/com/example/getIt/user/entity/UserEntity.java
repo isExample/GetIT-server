@@ -1,4 +1,4 @@
-package com.example.getIt.entity;
+package com.example.getIt.user.entity;
 
 import com.example.getIt.util.BaseEntity;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;

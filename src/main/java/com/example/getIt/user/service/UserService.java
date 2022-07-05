@@ -1,19 +1,16 @@
-package com.example.getIt.service;
+package com.example.getIt.user.service;
 
-import com.example.getIt.DTO.ProductDTO;
-import com.example.getIt.DTO.UserDTO;
-import com.example.getIt.entity.ProductEntity;
-import com.example.getIt.entity.UserEntity;
-import com.example.getIt.entity.UserProductEntity;
-import com.example.getIt.repository.ProductRepository;
-import com.example.getIt.repository.UserProductRepository;
-import com.example.getIt.repository.UserRepository;
+import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.user.DTO.UserDTO;
+import com.example.getIt.product.entity.ProductEntity;
+import com.example.getIt.user.entity.UserEntity;
+import com.example.getIt.product.entity.UserProductEntity;
+import com.example.getIt.product.repository.ProductRepository;
+import com.example.getIt.product.repository.UserProductRepository;
+import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.*;
 //import com.example.getIt.util.JwtService;
-import org.apache.catalina.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.List;

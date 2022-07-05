@@ -1,10 +1,7 @@
-package com.example.getIt.controller;
+package com.example.getIt.product.controller;
 
-import com.example.getIt.DTO.ProductDTO;
-import com.example.getIt.DTO.UserDTO;
-import com.example.getIt.entity.ProductEntity;
-import com.example.getIt.service.ProductService;
-import com.example.getIt.service.UserService;
+import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
 import org.springframework.web.bind.annotation.*;

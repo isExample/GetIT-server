@@ -1,9 +1,7 @@
-package com.example.getIt.repository;
+package com.example.getIt.product.repository;
 
-import com.example.getIt.DTO.ProductDTO;
-import com.example.getIt.entity.ProductEntity;
-import com.example.getIt.entity.UserEntity;
-import com.example.getIt.entity.UserProductEntity;
+import com.example.getIt.user.entity.UserEntity;
+import com.example.getIt.product.entity.UserProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

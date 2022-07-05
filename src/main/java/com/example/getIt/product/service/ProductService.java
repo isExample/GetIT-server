@@ -1,21 +1,18 @@
-package com.example.getIt.service;
+package com.example.getIt.product.service;
 
 
-import com.example.getIt.DTO.ProductDTO;
-import com.example.getIt.DTO.WebsiteDTO;
-import com.example.getIt.entity.ProductEntity;
-import com.example.getIt.entity.WebsiteEntity;
-import com.example.getIt.repository.ProductRepository;
-import com.example.getIt.repository.UserRepository;
-import com.example.getIt.repository.WebsiteRepository;
+import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.DTO.WebsiteDTO;
+import com.example.getIt.product.entity.ProductEntity;
+import com.example.getIt.product.entity.WebsiteEntity;
+import com.example.getIt.product.repository.ProductRepository;
+import com.example.getIt.product.repository.WebsiteRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
-import com.example.getIt.util.JwtService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductService {

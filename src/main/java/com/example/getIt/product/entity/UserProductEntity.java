@@ -1,11 +1,12 @@
-package com.example.getIt.entity;
+package com.example.getIt.product.entity;
 
+import com.example.getIt.product.entity.ProductEntity;
+import com.example.getIt.user.entity.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
 @Entity
 @Getter

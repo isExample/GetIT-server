@@ -1,4 +1,4 @@
-package com.example.getIt.entity;
+package com.example.getIt.product.entity;
 
 import lombok.Getter;
 

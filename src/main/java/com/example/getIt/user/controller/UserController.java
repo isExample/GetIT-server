@@ -1,14 +1,12 @@
-package com.example.getIt.controller;
+package com.example.getIt.user.controller;
 
 
-import com.example.getIt.DTO.UserDTO;
-import com.example.getIt.entity.UserEntity;
-import com.example.getIt.service.UserService;
+import com.example.getIt.user.DTO.UserDTO;
+import com.example.getIt.user.service.UserService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
 import com.example.getIt.util.BaseResponseStatus;
 import org.springframework.web.bind.annotation.*;
-import static com.example.getIt.util.ValidationRegex.isRegexEmail;
 
 @RestController
 @RequestMapping(value = "/users")

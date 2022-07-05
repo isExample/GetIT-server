@@ -1,7 +1,7 @@
-package com.example.getIt.DTO;
+package com.example.getIt.user.DTO;
 
 
-import com.example.getIt.entity.UserEntity;
+import com.example.getIt.product.DTO.ProductDTO;
 import lombok.*;
 
 import java.util.List;
