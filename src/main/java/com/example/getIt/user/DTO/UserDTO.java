@@ -2,6 +2,7 @@ package com.example.getIt.user.DTO;
 
 
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.util.Role;
 import lombok.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserDTO {
         private Integer birthday;
         private String job;
         private String status;
+        private Role role;
         private List<ProductDTO.GetProduct> likeProduct;
         public User(){}
 

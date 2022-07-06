@@ -1,6 +1,7 @@
 package com.example.getIt.user.entity;
 
 import com.example.getIt.util.BaseEntity;
+import com.example.getIt.util.Role;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
@@ -44,8 +45,13 @@ public class UserEntity extends BaseEntity {
     @Column(columnDefinition = "varchar(10) default 'active'")
     private String status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
     @Builder
-    public UserEntity(String nickName, String email, String password, Integer birthday, String job, String profileImgUrl, String status){
+    public UserEntity(String nickName, String email, String password, Integer birthday,
+                      String job, String profileImgUrl, String status, Role role){
         this.nickname = nickName;
         this.email = email;
         this.password = password;
@@ -53,5 +59,6 @@ public class UserEntity extends BaseEntity {
         this.job = job;
         this.profileImgUrl = profileImgUrl;
         this.status = status;
+        this.role = role;
     }
 }

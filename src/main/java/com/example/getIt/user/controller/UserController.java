@@ -1,6 +1,7 @@
 package com.example.getIt.user.controller;
 
 
+import com.example.getIt.user.jwt.DTO.TokenDTO;
 import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.user.service.UserService;
 import com.example.getIt.util.BaseException;
@@ -20,10 +21,10 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/sign-in")
-    public BaseResponse<UserDTO.PostUserRes> signIn(@RequestBody UserDTO.User user){
+    public BaseResponse<TokenDTO> signIn(@RequestBody UserDTO.User user){
         try {
-            UserDTO.PostUserRes postUserRes = this.userService.signIn(user);
-            return new BaseResponse<>(postUserRes);
+            TokenDTO token = this.userService.signIn(user);
+            return new BaseResponse<>(token);
 
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -46,7 +47,7 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/login")
-    public BaseResponse<UserDTO.PostUserRes> logIn(@RequestBody UserDTO.User user){
+    public BaseResponse<TokenDTO> logIn(@RequestBody UserDTO.User user){
         try {
             if(user.getEmail()==null){
                 return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY_NICKNAME);
@@ -55,7 +56,7 @@ public class UserController {
             if(user.getPassword()==null){
                 return new BaseResponse<>(BaseResponseStatus.POST_USERS_EMPTY_PASSWORD);
             }
-            UserDTO.PostUserRes postUserRes = userService.logIn(user);
+            TokenDTO postUserRes = userService.logIn(user);
 
             return new BaseResponse<>(postUserRes);
 
