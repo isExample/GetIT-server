@@ -47,7 +47,6 @@ public class UserService {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-//        this.jwtService = jwtService;
     }
 
     public TokenDTO signIn(UserDTO.User user) throws BaseException {
