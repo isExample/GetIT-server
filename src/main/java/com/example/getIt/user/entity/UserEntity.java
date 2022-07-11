@@ -2,13 +2,10 @@ package com.example.getIt.user.entity;
 
 import com.example.getIt.util.BaseEntity;
 import com.example.getIt.util.Role;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -42,6 +39,9 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = true)
     private String profileImgUrl;
 
+    @Column(nullable = true)
+    private String provider; // google
+
     @Column(columnDefinition = "varchar(10) default 'active'")
     private String status;
 
@@ -51,7 +51,7 @@ public class UserEntity extends BaseEntity {
 
     @Builder
     public UserEntity(String nickName, String email, String password, Integer birthday,
-                      String job, String profileImgUrl, String status, Role role){
+                      String job, String profileImgUrl, String provider, String status, Role role){
         this.nickname = nickName;
         this.email = email;
         this.password = password;
@@ -59,6 +59,16 @@ public class UserEntity extends BaseEntity {
         this.job = job;
         this.profileImgUrl = profileImgUrl;
         this.status = status;
+        this.provider = provider;
         this.role = role;
+    }
+    public UserEntity update(String nickname, String profileImgUrl){
+        this.nickname = nickname;
+        this.profileImgUrl = profileImgUrl;
+        return this;
+    }
+
+    public String getRoleKey(){
+        return this.role.name();
     }
 }

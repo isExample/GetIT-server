@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,6 +77,7 @@ public class UserService {
                 .nickName(user.getNickName())
                 .birthday(user.getBirthday())
                 .role(Role.ROLE_USER)
+                .provider("Not_Social")
                 .build();
         user.setPassword(password);
         userRepository.save(userEntity);
@@ -113,11 +115,14 @@ public class UserService {
         if(!isRegexEmail(user.getEmail())){
             throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_EMAIL);
         }
+
         UserEntity userEntity = userRepository.findByEmail(user.getEmail()).get();
         if(userEntity == null){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
-
         }else{
+            if(userEntity.getProvider()!="Not_Social"){
+                throw new BaseException(BaseResponseStatus.SOCIAL);
+            }
             if(passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) { // 그냥 받아온 password를 넣으면 알아서 암호화해서 비교함.
                 return token(user);
             }else{
@@ -126,6 +131,7 @@ public class UserService {
 
         }
     }
+
 
 
     public UserDTO.User getUser(Long userIdx) throws BaseException {
@@ -192,4 +198,5 @@ public class UserService {
         // 토큰 발급
         return tokenDto;
     }
+
 }

@@ -9,6 +9,8 @@ import com.example.getIt.util.BaseResponse;
 import com.example.getIt.util.BaseResponseStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping(value = "/users")
 public class UserController {
