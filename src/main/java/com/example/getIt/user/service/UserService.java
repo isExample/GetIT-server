@@ -120,7 +120,7 @@ public class UserService {
         if(userEntity == null){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }else{
-            if(userEntity.getProvider()!="Not_Social"){
+            if(!userEntity.getProvider().equals("Not_Social")){
                 throw new BaseException(BaseResponseStatus.SOCIAL);
             }
             if(passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) { // 그냥 받아온 password를 넣으면 알아서 암호화해서 비교함.
@@ -131,7 +131,6 @@ public class UserService {
 
         }
     }
-
 
 
     public UserDTO.User getUser(Long userIdx) throws BaseException {
