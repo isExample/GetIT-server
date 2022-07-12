@@ -47,6 +47,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     private void writeTokenResponse(HttpServletResponse response, TokenDTO token)
             throws IOException {
         BaseResponse baseResponse = new BaseResponse(token);
+        response.setContentType("application/json;charset=UTF-8");
         var writer = response.getWriter();
         writer.println(objectMapper.writeValueAsString(baseResponse));
         writer.flush();
