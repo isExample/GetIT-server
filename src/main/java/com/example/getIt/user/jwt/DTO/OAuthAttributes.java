@@ -33,9 +33,9 @@ public class OAuthAttributes {
             case "google":
                 return ofGoogle(registrationId, userNameAttributeName, attributes);
             case "kakao":
-                return ofKakao(registrationId, userNameAttributeName, attributes);
+                return ofKakao(registrationId, "email", attributes);
             case "naver":
-                return ofNaver(registrationId, userNameAttributeName, attributes);
+                return ofNaver(registrationId, "id", attributes);
             default:
                 throw new RuntimeException();
         }
@@ -55,11 +55,14 @@ public class OAuthAttributes {
     }
     private static OAuthAttributes ofKakao(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         // 카카오 로그인 생성 후 변경 필요
+        Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
+        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
+
         return OAuthAttributes.builder()
-                .nickName((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .profileImgUrl((String) attributes.get("picture"))
-                .attributes(attributes)
+                .nickName((String) kakaoProfile.get("nickname"))
+                .email((String) kakaoAccount.get("email"))
+                .profileImgUrl((String)kakaoProfile.get("profile_image_url"))
+                .attributes(kakaoAccount)
                 .nameAttributeKey(userNameAttributeName)
                 .provider(registrationId)
                 .build();
@@ -67,11 +70,13 @@ public class OAuthAttributes {
 
     private static OAuthAttributes ofNaver(String registrationId, String userNameAttributeName, Map<String, Object> attributes) {
         // 네이버 로그인 생성 후 변경 필요
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+
         return OAuthAttributes.builder()
-                .nickName((String) attributes.get("name"))
-                .email((String) attributes.get("email"))
-                .profileImgUrl((String) attributes.get("picture"))
-                .attributes(attributes)
+                .nickName((String) response.get("name"))
+                .email((String) response.get("email"))
+                .profileImgUrl((String) response.get("profile_image"))
+                .attributes(response)
                 .nameAttributeKey(userNameAttributeName)
                 .provider(registrationId)
                 .build();
