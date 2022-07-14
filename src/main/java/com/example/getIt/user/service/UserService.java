@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.getIt.util.ValidationRegex.isRegexEmail;
+import static com.example.getIt.util.ValidationRegex.isRegexPwd;
 
 @Service
 public class UserService {
@@ -57,6 +58,9 @@ public class UserService {
         if(!isRegexEmail(user.getEmail())){
             throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_EMAIL);
         }
+        if(!isRegexPwd(user.getPassword())){
+            throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PWD);
+        }
         if(isHaveEmail(user.getEmail())){
             throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);
         }
@@ -65,7 +69,6 @@ public class UserService {
         }
         String password = user.getPassword();
         try{
-
             String encodedPwd = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPwd);
         }catch (Exception e){

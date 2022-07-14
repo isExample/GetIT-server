@@ -4,6 +4,8 @@ import com.example.getIt.user.DTO.SessionUser;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.jwt.DTO.OAuthAttributes;
 import com.example.getIt.user.repository.UserRepository;
+import com.example.getIt.util.BaseException;
+import com.example.getIt.util.BaseResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -33,7 +35,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
-        UserEntity user = saveOrUpdate(attributes);
+        UserEntity user = saveOrUpdate(attributes, registrationId);
         httpSession.setAttribute("user", new SessionUser(user));
 
         return new DefaultOAuth2User(
@@ -43,10 +45,25 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
     }
 
 
-    private UserEntity saveOrUpdate(OAuthAttributes attributes) {
+    private UserEntity saveOrUpdate(OAuthAttributes attributes, String registrationId) {
         UserEntity user = userRepository.findByEmail(attributes.getEmail())
-                .map(entity -> entity.update(attributes.getNickName(), attributes.getProfileImgUrl()))
+                .map(entity -> {
+                    try {
+                        return change(entity, attributes, registrationId);
+                    } catch (BaseException e) {
+                        e.printStackTrace();
+                    }
+                    return entity;
+                })
                 .orElse(attributes.toEntity());
         return userRepository.save(user);
+
+    }
+
+    private UserEntity change(UserEntity user, OAuthAttributes attributes, String registrationId) throws BaseException {
+        if(user.getProvider().equals(registrationId)){
+            return user.update(attributes.getNickName(), attributes.getProfileImgUrl());
+        }else throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);// base Exception 제공하기
+
     }
 }
