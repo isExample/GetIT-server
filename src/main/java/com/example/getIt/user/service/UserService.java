@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.getIt.util.ValidationRegex.isRegexEmail;
 import static com.example.getIt.util.ValidationRegex.isRegexPwd;
@@ -119,10 +120,11 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_EMAIL);
         }
 
-        UserEntity userEntity = userRepository.findByEmail(user.getEmail()).get();
-        if(userEntity == null){
+        Optional<UserEntity> optional = userRepository.findByEmail(user.getEmail());
+        if(optional.isEmpty()){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }else{
+            UserEntity userEntity = optional.get();
             if(!userEntity.getProvider().equals("Not_Social")){
                 throw new BaseException(BaseResponseStatus.SOCIAL);
             }
@@ -136,9 +138,9 @@ public class UserService {
     }
 
 
-    public UserDTO.User getUser(Long userIdx) throws BaseException {
+    public UserDTO.UserProtected getUser(Principal principal) throws BaseException {
         try{
-            UserEntity userEntity = userRepository.findAllByUserIdx(userIdx);
+            UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
             List<UserProductEntity> products = userProductRepository.findAllByUserIdx(userEntity);
             List<ProductDTO.GetProduct> likeProduct = new ArrayList<>();
 
@@ -154,10 +156,9 @@ public class UserService {
                 ));
             }
 
-            return new UserDTO.User(
+            return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),
                     userEntity.getEmail(),
-                    userEntity.getPassword(),
                     userEntity.getNickname(),
                     userEntity.getBirthday(),
                     userEntity.getJob(),
