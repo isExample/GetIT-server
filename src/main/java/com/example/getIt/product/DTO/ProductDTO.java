@@ -1,6 +1,7 @@
 package com.example.getIt.product.DTO;
 
 import lombok.*;
+import net.minidev.json.JSONObject;
 
 import java.util.List;
 
@@ -37,4 +38,27 @@ public class ProductDTO {
         private List<WebsiteDTO.GetWebsiteRes> websites;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetCategoryRes{
+        private String type;
+        private String brand;
+        private String cpu;
+        private String ram;
+        private String screenSize;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetProductList{
+        private String imgUrl;
+        private String name;
+
+        public GetProductList(JSONObject jsonObject){
+            this.imgUrl = jsonObject.getAsString("image");
+            this.name = jsonObject.getAsString("title");
+        }
+    }
 }

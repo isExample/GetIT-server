@@ -9,7 +9,11 @@ import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,5 +69,24 @@ public class ProductService {
         }
     }
 
+    private static final String clientId = "zJTehW5KOih5qWzoYiGQ";
+    private static final String clientSecret = "1Uwlj41fYB";
+    private static String apiUrl = "https://openapi.naver.com/v1/search/shop.json";
+    public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) {
+        RestTemplate rest = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Naver-Client-Id", clientId);
+        headers.add("X-Naver-Client-Secret", clientSecret);
+        String body = "";
+        apiUrl += "?query=노트북,"+getCategoryRes.getBrand();
+        HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
+        ResponseEntity<JSONObject> responseEntity = rest.exchange(apiUrl, HttpMethod.GET, requestEntity, JSONObject.class);
 
+        JSONObject rjson = new JSONObject(responseEntity.getBody());
+        System.out.println(responseEntity.getBody());
+        ProductDTO.GetProductList productList = new ProductDTO.GetProductList(rjson);
+        List<ProductDTO.GetProductList> result = null;
+
+        return result;
+    }
 }
