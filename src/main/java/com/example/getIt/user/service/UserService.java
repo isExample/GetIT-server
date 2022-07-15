@@ -202,4 +202,29 @@ public class UserService {
         return tokenDto;
     }
 
+    public void patchPwd(Principal principal, UserDTO.User user) throws BaseException{
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(user.getPassword() == null){
+            throw new BaseException(BaseResponseStatus.POST_USERS_EMPTY);
+        }
+        if(optional.isEmpty()){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        UserEntity userEntity = optional.get();
+        if(!userEntity.getProvider().equals("Not_Social")){
+            throw new BaseException(BaseResponseStatus.SOCIAL);
+        }
+        if(!isRegexPwd(user.getPassword())){
+            throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PWD);
+        }
+        String encodedPwd;
+        try{
+            encodedPwd = passwordEncoder.encode(user.getPassword());
+            user.setPassword(encodedPwd);
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.PASSWORD_ENCRYPTION_ERROR);
+        }
+        userEntity.changePwd(encodedPwd);
+        userRepository.save(userEntity);
+    }
 }

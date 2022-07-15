@@ -28,7 +28,7 @@ public enum BaseResponseStatus {
     PASSWORD_ENCRYPTION_ERROR(false, 4001, "비밀번호 암호화에 실패했습니다."),
     DATABASE_ERROR(false, 4002, "데이터베이스 연결에 실패하였습니다.");
     /*
-    * 7000
+    * 7000 : PATCH
     * */
 
 
