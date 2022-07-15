@@ -78,12 +78,10 @@ public class ProductService {
             String body = "";
             apiUrl += getCategoryRes.getType()+","+getCategoryRes.getRequirement();
             apiUrl = apiUrl.replace(",null", "");
-            System.out.println(apiUrl);
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<String> responseEntity = rest.exchange(apiUrl, HttpMethod.GET, requestEntity, String.class);
             JSONObject rjson = new JSONObject(responseEntity.getBody());
             JSONArray items = rjson.getJSONArray("items");
-            System.out.println(items);
             if(items.isEmpty()){
                 throw new Exception();
             }else{
