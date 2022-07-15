@@ -35,11 +35,12 @@ public class UserController {
     }
 
     //회원 조회
+    // 후에 양방향 매핑할지, 코드를 유지할 지 정해야 할 것으로 보임!
     @ResponseBody
-    @GetMapping("/{userIdx}")
-    public BaseResponse<UserDTO.User> getUser(@PathVariable("userIdx")Long userIdx){
+    @GetMapping("/mypage")
+    public BaseResponse<UserDTO.UserProtected> getUser(Principal principal){
         try {
-            UserDTO.User userInfo = userService.getUser(userIdx);
+            UserDTO.UserProtected userInfo = userService.getUser(principal);
             return new BaseResponse<>(userInfo);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -62,6 +63,18 @@ public class UserController {
 
             return new BaseResponse<>(postUserRes);
 
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
+
+    @ResponseBody
+    @PatchMapping("/pwd")
+    public BaseResponse<String> patchPwd(Principal principal, @RequestBody UserDTO.User user){
+        try {
+            this.userService.patchPwd(principal, user);
+            return new BaseResponse<>("password 정보 수정을 완료했습니다");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

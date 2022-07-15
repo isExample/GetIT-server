@@ -27,6 +27,23 @@ public class UserDTO {
 
     }
 
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class UserProtected{
+        private Long userIdx;
+        private String email;
+        private String nickName;
+        private Integer birthday;
+        private String job;
+        private String status;
+        private Role role;
+        private List<ProductDTO.GetProduct> likeProduct;
+        public UserProtected(){}
+
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor

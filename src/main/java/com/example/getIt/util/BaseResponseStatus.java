@@ -18,14 +18,17 @@ public enum BaseResponseStatus {
     * */
     POST_USERS_EMPTY(false, 2002, "공백 없이 입력해주세요."),
     POST_USERS_INVALID_EMAIL(false, 5000, "이메일 양식이 맞지 않습니다."),
+    POST_USERS_INVALID_PWD(false, 5001, "비밀번호 양식이 맞지 않습니다."),
+
     SOCIAL(false, 5001, "소셜로 로그인을 진행한 이메일 입니다."),
+    NOT_SOCIAL(false, 2001, "소셜이 로그인으로 진행한 이메일입니다."),
     /*
      * 5000: database error
      * */
     PASSWORD_ENCRYPTION_ERROR(false, 4001, "비밀번호 암호화에 실패했습니다."),
     DATABASE_ERROR(false, 4002, "데이터베이스 연결에 실패하였습니다.");
     /*
-    * 7000
+    * 7000 : PATCH
     * */
 
 
