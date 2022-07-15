@@ -13,6 +13,7 @@ public enum BaseResponseStatus {
     POST_USERS_EMPTY_PASSWORD(false, 2005, "비밀번호를 입력해주세요."),
     POST_USERS_INVALID_PASSWORD(false, 2006, "비밀번호가 틀렸습니다."),
     FAILED_TO_LOGIN(false, 2007, "없는 아이디이거나 비밀번호가 틀렸습니다."),
+    FAILED_TO_SEARCH(false, 2008, "검색을 실패하였습니다."),
     /*
     * 4000: [POST]
     * */

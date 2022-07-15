@@ -43,8 +43,12 @@ public class ProductController {
     @ResponseBody
     @GetMapping("/category")
     public BaseResponse<List<ProductDTO.GetProductList>> getCategory(@RequestBody ProductDTO.GetCategoryRes getCategoryRes){
-        List<ProductDTO.GetProductList> getProductList = productService.getCategoryList(getCategoryRes);
-        return new BaseResponse<>(getProductList);
+        try {
+            List<ProductDTO.GetProductList> getProductList = productService.getCategoryList(getCategoryRes);
+            return new BaseResponse<>(getProductList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
 
