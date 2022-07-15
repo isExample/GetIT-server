@@ -26,7 +26,6 @@ public class ProductService {
     private WebsiteRepository websiteRepository;
     private static final String clientId = "YOUR_CLIENT_ID";
     private static final String clientSecret = "YOUR_CLIENT_SECRET";
-    private static String apiUrl = "https://openapi.naver.com/v1/search/shop.json?query=";
 
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository){
         this.productRepository = productRepository;
@@ -71,6 +70,7 @@ public class ProductService {
 
     public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
         try {
+            String apiUrl = "https://openapi.naver.com/v1/search/shop.json?query=";
             RestTemplate rest = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
             headers.add("X-Naver-Client-Id", clientId);
@@ -78,14 +78,15 @@ public class ProductService {
             String body = "";
             apiUrl += getCategoryRes.getType()+","+getCategoryRes.getRequirement();
             apiUrl = apiUrl.replace(",null", "");
+            System.out.println(apiUrl);
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<String> responseEntity = rest.exchange(apiUrl, HttpMethod.GET, requestEntity, String.class);
             JSONObject rjson = new JSONObject(responseEntity.getBody());
             JSONArray items = rjson.getJSONArray("items");
+            System.out.println(items);
             if(items.isEmpty()){
                 throw new Exception();
             }else{
-                System.out.println(items);
                 List<ProductDTO.GetProductList> result = new ArrayList<>();
                 for (int i=0; i<items.length(); i++){
                     JSONObject eachItem = (JSONObject) items.get(i);
