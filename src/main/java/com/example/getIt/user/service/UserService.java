@@ -131,7 +131,7 @@ public class UserService {
             if(passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) { // 그냥 받아온 password를 넣으면 알아서 암호화해서 비교함.
                 return token(user);
             }else{
-                throw new BaseException(BaseResponseStatus.PASSWORD_ENCRYPTION_ERROR);
+                throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PASSWORD);
             }
 
         }
@@ -202,25 +202,31 @@ public class UserService {
         return tokenDto;
     }
 
-    public void patchPwd(Principal principal, UserDTO.User user) throws BaseException{
+    public void patchPwd(Principal principal, UserDTO.UserPwd user) throws BaseException{
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
-        if(user.getPassword() == null){
-            throw new BaseException(BaseResponseStatus.POST_USERS_EMPTY);
-        }
         if(optional.isEmpty()){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
+        if(user.getPassword() == null || user.getNewPassword() == null){
+            throw new BaseException(BaseResponseStatus.POST_USERS_EMPTY);
+        }
         UserEntity userEntity = optional.get();
+        if(!passwordEncoder.matches(user.getPassword(), userEntity.getPassword())) { // 그냥 받아온 password를 넣으면 알아서 암호화해서 비교함.
+            throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PASSWORD);
+        }
+        if(user.getPassword().equals(user.getNewPassword())){
+            throw new BaseException(BaseResponseStatus.PASSWORD_EQUALS_NEWPASSWORD);
+        }
+
         if(!userEntity.getProvider().equals("Not_Social")){
             throw new BaseException(BaseResponseStatus.SOCIAL);
         }
-        if(!isRegexPwd(user.getPassword())){
+        if(!isRegexPwd(user.getNewPassword())){
             throw new BaseException(BaseResponseStatus.POST_USERS_INVALID_PWD);
         }
         String encodedPwd;
         try{
-            encodedPwd = passwordEncoder.encode(user.getPassword());
-            user.setPassword(encodedPwd);
+            encodedPwd = passwordEncoder.encode(user.getNewPassword());
         }catch (Exception e){
             throw new BaseException(BaseResponseStatus.PASSWORD_ENCRYPTION_ERROR);
         }

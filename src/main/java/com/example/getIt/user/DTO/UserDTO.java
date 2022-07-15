@@ -51,4 +51,12 @@ public class UserDTO {
         private String jwt;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserPwd {
+        private String password;
+        private String newPassword;
+    }
+
 }

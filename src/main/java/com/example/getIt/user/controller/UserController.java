@@ -71,7 +71,7 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/pwd")
-    public BaseResponse<String> patchPwd(Principal principal, @RequestBody UserDTO.User user){
+    public BaseResponse<String> patchPwd(Principal principal, @RequestBody UserDTO.UserPwd user){
         try {
             this.userService.patchPwd(principal, user);
             return new BaseResponse<>("password 정보 수정을 완료했습니다");
