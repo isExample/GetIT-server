@@ -71,4 +71,5 @@ public class UserEntity extends BaseEntity {
     public String getRoleKey(){
         return this.role.name();
     }
+    public void changePwd(String pwd){this.password = pwd;}
 }
