@@ -51,5 +51,16 @@ public class ProductController {
         }
     }
 
+    @ResponseBody
+    @GetMapping("/all")
+    public BaseResponse<List<ProductDTO.GetProductList>> getAll(){
+        try {
+            List<ProductDTO.GetProductList> getProductList = productService.getAll();
+            return new BaseResponse<>(getProductList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 
 }

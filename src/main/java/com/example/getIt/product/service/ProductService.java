@@ -16,8 +16,13 @@ import org.json.JSONObject;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -94,6 +99,53 @@ public class ProductService {
                 }
                 return result;
             }
+        } catch (Exception e) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
+        }
+    }
+
+    public List<ProductDTO.GetProductList> getAll() throws BaseException {
+        try {
+            String[] categories = {"노트북", "핸드폰", "태블릿", "스피커", "데스크탑"};
+            List<ProductDTO.GetProductList> result = new ArrayList<>();
+            for(int i = 0; i < 5; i++) {
+                String query = categories[i];
+                ByteBuffer buffer = StandardCharsets.UTF_8.encode(query);
+                String encode = StandardCharsets.UTF_8.decode(buffer).toString();
+
+                URI uri = UriComponentsBuilder
+                        .fromUriString("https://openapi.naver.com")
+                        .path("/v1/search/shop.json")
+                        .queryParam("query", encode)
+                        .queryParam("display", 20)
+                        .encode()
+                        .build()
+                        .toUri();
+
+                RestTemplate restTemplate = new RestTemplate();
+
+                RequestEntity<Void> req = RequestEntity
+                        .get(uri)
+                        .header("X-Naver-Client-Id", clientId)
+                        .header("X-Naver-Client-Secret", clientSecret)
+                        .build();
+
+                ResponseEntity<String> responseEntity = restTemplate.exchange(req, String.class);
+                JSONObject rjson = new JSONObject(responseEntity.getBody());
+                JSONArray items = rjson.getJSONArray("items");
+                if(items.isEmpty()){
+                    throw new Exception();
+                }else {
+                    for (int j = 0; j < items.length(); j++) {
+                        JSONObject eachItem = (JSONObject) items.get(j);
+                        ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
+                        product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
+                        result.add(product);
+                    }
+                }
+            }
+            Collections.shuffle(result);
+            return result;
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
         }
