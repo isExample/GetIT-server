@@ -152,7 +152,9 @@ public class UserService {
                         likeProductInfo.getBrand(),
                         likeProductInfo.getType(),
                         likeProductInfo.getImage(),
-                        likeProductInfo.getLowestprice()
+                        likeProductInfo.getLowestprice(),
+                        likeProductInfo.getProductId(),
+                        likeProductInfo.getProductUrl()
                 ));
             }
 

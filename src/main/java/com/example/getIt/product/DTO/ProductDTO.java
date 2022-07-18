@@ -20,6 +20,28 @@ public class ProductDTO {
         private String type;
         private String image;
         private String lowestprice;
+        private String productId;
+        private String productUrl;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class GetProductReveiw{
+        private String name;
+        private String brand;
+        private String type;
+        private String image;
+        private String cpu;
+        private String ram;
+        private String lowestprice;
+        private String productId;
+        private String productUrl;
+        private String review;
+        private String reviewImgUrl;
+        private String date;
+        private String description;
     }
 
     @Getter
@@ -55,12 +77,14 @@ public class ProductDTO {
         private String name;
         private int price;
         private String productUrl;
+        private String productId;
 
         public GetProductList(JSONObject jsonObject){
             this.imgUrl = jsonObject.getString("image");
             this.name = jsonObject.getString("title");
             this.price = jsonObject.getInt("lprice");
             this.productUrl = jsonObject.getString("productId");
+            this.productId = this.productUrl;
         }
     }
 }

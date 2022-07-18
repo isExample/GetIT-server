@@ -6,6 +6,7 @@ import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -57,6 +58,20 @@ public class ProductController {
         try {
             List<ProductDTO.GetProductList> getProductList = productService.getAll();
             return new BaseResponse<>(getProductList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /*
+    * 아리 : review
+    * */
+    @ResponseBody
+    @PostMapping("/review")
+    public BaseResponse<String> postReview(Principal principal, @RequestBody ProductDTO.GetProductReveiw product){
+        try {
+            productService.postReview(principal, product);
+            return new BaseResponse<>("리뷰 작성을 완료했습니다.");
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

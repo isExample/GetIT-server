@@ -11,4 +11,5 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
     List<ProductDTO.GetProduct> findByOrderByCreatedAt();
     ProductEntity findAllByProductIdx(Long productIdx);
+    ProductEntity findByProductId(String productId);
 }
