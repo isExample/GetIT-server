@@ -18,6 +18,12 @@ public class ProductEntity extends BaseEntity {
     private Long productIdx;
 
     @Column(nullable = false, length = 10)
+    private String productId;
+
+    @Column(nullable = false, length = 10)
+    private String productUrl;
+
+    @Column(nullable = false, length = 10)
     private String type;
 
     @Column(nullable = false, length = 30)
@@ -43,4 +49,20 @@ public class ProductEntity extends BaseEntity {
 
     @Column(nullable = false, length = 10)
     private String ram;
+
+    @Builder
+    public ProductEntity(String productId, String productUrl, String type, String brand, String image, String date,
+                         String description, String lowestprice, String cpu, String ram, String name){
+        this.productId = productId;
+        this.productUrl = productUrl;
+        this.type = type;
+        this.brand = brand;
+        this.image = image;
+        this.date = date;
+        this.name = name;
+        this.description = description;
+        this.lowestprice = lowestprice;
+        this.cpu = cpu;
+        this.ram = ram;
+    }
 }

@@ -17,7 +17,9 @@ public enum BaseResponseStatus {
     /*
     * 4000: [POST]
     * */
-    POST_USERS_EMPTY(false, 2002, "공백 없이 입력해주세요."),
+    POST_USERS_EMPTY(false, 4777, "공백 없이 입력해주세요."),
+    POST_PRODUCTID_EMPTY(false, 4778, "productId가 공백입니다."),
+    POST_REVEIW_EMPTY(false, 4778, "REVIEW 내용이 공백입니다."),
     POST_USERS_INVALID_EMAIL(false, 5000, "이메일 양식이 맞지 않습니다."),
     POST_USERS_INVALID_PWD(false, 5001, "비밀번호 양식이 맞지 않습니다."),
 

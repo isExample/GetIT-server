@@ -4,15 +4,21 @@ package com.example.getIt.product.service;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.DTO.WebsiteDTO;
 import com.example.getIt.product.entity.ProductEntity;
+import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.product.entity.WebsiteEntity;
 import com.example.getIt.product.repository.ProductRepository;
+import com.example.getIt.product.repository.ReviewRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
+import com.example.getIt.user.entity.UserEntity;
+import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
 
+import com.example.getIt.util.Role;
 import org.json.JSONArray;
 
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,20 +27,31 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
     private ProductRepository productRepository;
     private WebsiteRepository websiteRepository;
-    private static final String clientId = "YOUR_CLIENT_ID";
-    private static final String clientSecret = "YOUR_CLIENT_SECRET";
+    private UserRepository userRepository;
+    private String clientId;
+    private String clientSecret;
+    private ReviewRepository reviewRepository;
+//    private static final String clientId = "YOUR_CLIENT_ID";
+//    private static final String clientSecret = "YOUR_CLIENT_SECRET";
 
-    public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository){
+    public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
+                          ReviewRepository reviewRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret){
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
+        this.clientId = clientId;
+        this.clientSecret = clientSecret;
+        this.userRepository = userRepository;
+        this.reviewRepository = reviewRepository;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -148,6 +165,51 @@ public class ProductService {
             return result;
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
+        }
+    }
+
+    public void postReview(Principal principal, ProductDTO.GetProductReveiw product) throws BaseException {
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isEmpty()){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        if(product.getProductId() == null){
+            throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+        }
+        if(product.getReview() == null){
+            throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
+        }
+        ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+        if(productEntity == null){
+            ProductEntity newProduct = ProductEntity.builder()
+                    .productId(product.getProductId())
+                    .productUrl(product.getProductUrl())
+                    .name(product.getName())
+                    .brand(product.getBrand())
+                    .type(product.getType())
+                    .image(product.getImage())
+                    .lowestprice(product.getLowestprice())
+                    .ram(product.getRam())
+                    .cpu(product.getCpu())
+                    .date(product.getDate())
+                    .description(product.getDescription())
+                    .build();
+            this.productRepository.save(newProduct);
+            ReviewEntity review = ReviewEntity.builder()
+                    .userEntity(optional.get())
+                    .productEntity(newProduct)
+                    .review(product.getReview())
+                    .reviewImgUrl(product.getReviewImgUrl())
+                    .build();
+            this.reviewRepository.save(review);
+        }else{
+            ReviewEntity review = ReviewEntity.builder()
+                    .userEntity(optional.get())
+                    .productEntity(productEntity)
+                    .review(product.getReview())
+                    .reviewImgUrl(product.getReviewImgUrl())
+                    .build();
+            this.reviewRepository.save(review);
         }
     }
 }
