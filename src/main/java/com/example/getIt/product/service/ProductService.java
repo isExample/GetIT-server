@@ -2,10 +2,8 @@ package com.example.getIt.product.service;
 
 
 import com.example.getIt.product.DTO.ProductDTO;
-import com.example.getIt.product.DTO.WebsiteDTO;
 import com.example.getIt.product.entity.ProductEntity;
 import com.example.getIt.product.entity.ReviewEntity;
-import com.example.getIt.product.entity.WebsiteEntity;
 import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.ReviewRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
@@ -13,17 +11,18 @@ import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
-
-import com.example.getIt.util.Role;
 import org.json.JSONArray;
-
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -58,37 +57,48 @@ public class ProductService {
         return getProducts;
     }
 
-    public ProductDTO.GetProductRes getProduct(Long productIdx) throws BaseException {
-        try{
-            ProductEntity productEntity = productRepository.findAllByProductIdx(productIdx);
-            List<WebsiteEntity> websiteEntity = websiteRepository.findAllByProduct(productEntity);
-            List<WebsiteDTO.GetWebsiteRes> websites = new ArrayList<>();
-
-            for(WebsiteEntity temp : websiteEntity){
-                websites.add(new WebsiteDTO.GetWebsiteRes(
-                        temp.getWebIdx(),
-                        temp.getCost(),
-                        temp.getUrl()
-                ));
-            }
-
-            return new ProductDTO.GetProductRes(
-                    productEntity.getProductIdx(),
-                    productEntity.getType(),
-                    productEntity.getImage(),
-                    productEntity.getName(),
-                    productEntity.getBrand(),
-                    productEntity.getDate(),
-                    productEntity.getCpu(),
-                    productEntity.getRam(),
-                    productEntity.getLowestprice(),
-                    productEntity.getDescription(),
-                    websites
-            );
-        }catch (Exception e){
-            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+    public void getProduct(String productIdx) throws BaseException, IOException {
+        String url = "https://search.shopping.naver.com/catalog/"+productIdx;
+        Document doc = Jsoup.connect(url).get();
+        Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
+        Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
+        String[] productinfo = new String[contents.size()];
+        System.out.println(namecontents.text());
+        for (int i = 0; i < contents.size(); i++) {
+            productinfo[i]=contents.get(i).text();
         }
-    }
+        for (int j = 0; j< productinfo.length; j++){
+            boolean b = productinfo[j].contains("CPU") || productinfo[j].contains("크기") || productinfo[j].contains("램") || productinfo[j].contains("무게") || productinfo[j].contains("품목");
+            boolean c = productinfo[j].contains("내장메모리") || productinfo[j].contains("통신규격") || productinfo[j].contains("운영체제");
+            boolean d = productinfo[j].contains("SSD")||productinfo[j].contains("HDD");
+            boolean s = productinfo[j].contains("품목")||productinfo[j].contains("출력")||productinfo[j].contains("단자")||productinfo[j].contains("무게");
+            if(productinfo[j].contains("스마트폰")){
+                if(b||c){
+                    System.out.println(productinfo[j]);
+                }
+            }
+            else if(productinfo[j].contains("데스크탑")){
+                if(b||d){
+                    System.out.println(productinfo[j]);
+                }
+            }
+            else if(productinfo[j].contains("패드")){
+                if(b||c){
+                    System.out.println(productinfo[j]);
+                }
+            }
+            else if(productinfo[j].contains("스피커")){
+                if(s){
+                    System.out.println(productinfo[j]);
+                }
+            }
+            else{
+                if(b||c||d){
+                    System.out.println(productinfo[j]);
+                }
+            }
+            }
+        }
 
     public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
         try {
@@ -168,7 +178,7 @@ public class ProductService {
         }
     }
 
-    public void postReview(Principal principal, ProductDTO.GetProductReveiw product) throws BaseException {
+    public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
