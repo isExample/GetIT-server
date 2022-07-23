@@ -81,5 +81,14 @@ public class ProductController {
         }
     }
 
-
+    @ResponseBody
+    @PostMapping("/setLike")
+    public BaseResponse<String> postLike(Principal principal, @RequestBody ProductDTO.PostsetLike product){
+        try {
+            productService.postLike(principal, product);
+            return new BaseResponse<>("좋아요 목록에 추가되었습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

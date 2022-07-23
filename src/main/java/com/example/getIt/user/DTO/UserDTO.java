@@ -58,5 +58,11 @@ public class UserDTO {
         private String password;
         private String newPassword;
     }
-
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    public static class UserLikeList{
+        private Long userIdx;
+        private List<ProductDTO.GetProduct> likeProduct;
+    }
 }

@@ -28,13 +28,12 @@ public class ProductDTO {
     @Getter
     @AllArgsConstructor
     @Builder
-    public static class GetProductReveiw{
+    public static class GetProductReview{
         private String name;
         private String brand;
         private String type;
         private String image;
-        private String cpu;
-        private String ram;
+        private String detail;
         private String lowestprice;
         private String productId;
         private String productUrl;
@@ -86,5 +85,21 @@ public class ProductDTO {
             this.productUrl = jsonObject.getString("productId");
             this.productId = this.productUrl;
         }
+    }
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class PostsetLike{
+        private String productId;
+        private String productUrl;
+        private String type;
+        private String name;
+        private String brand;
+        private String image;
+        private String date;
+        private String description;
+        private String lowestprice;
+        private String detail;
     }
 }

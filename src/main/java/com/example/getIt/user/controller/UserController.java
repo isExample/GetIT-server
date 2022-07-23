@@ -81,4 +81,15 @@ public class UserController {
 
     }
 
+    @ResponseBody
+    @GetMapping("/mylike")
+    public BaseResponse<UserDTO.UserLikeList> getUserLikeList(Principal principal){
+        try {
+            UserDTO.UserLikeList userInfo = userService.getUserLikeList(principal);
+            return new BaseResponse<>(userInfo);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+
+    }
 }
