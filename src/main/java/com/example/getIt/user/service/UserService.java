@@ -140,23 +140,8 @@ public class UserService {
 
     public UserDTO.UserProtected getUser(Principal principal) throws BaseException {
         try{
+            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
             UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
-            List<UserProductEntity> products = userProductRepository.findAllByUserIdx(userEntity);
-            List<ProductDTO.GetProduct> likeProduct = new ArrayList<>();
-
-            for(UserProductEntity temp : products){
-                ProductEntity likeProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
-                likeProduct.add(new ProductDTO.GetProduct(
-                        likeProductInfo.getProductIdx(),
-                        likeProductInfo.getName(),
-                        likeProductInfo.getBrand(),
-                        likeProductInfo.getType(),
-                        likeProductInfo.getImage(),
-                        likeProductInfo.getLowestprice(),
-                        likeProductInfo.getProductId(),
-                        likeProductInfo.getProductUrl()
-                ));
-            }
 
             return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),
@@ -166,7 +151,7 @@ public class UserService {
                     userEntity.getJob(),
                     userEntity.getStatus(),
                     userEntity.getRole(),
-                    likeProduct
+                    userLikeList.getLikeProduct()
             );
         }catch (Exception e){
             System.out.println("Error: "+e);
@@ -234,5 +219,35 @@ public class UserService {
         }
         userEntity.changePwd(encodedPwd);
         userRepository.save(userEntity);
+    }
+
+    public UserDTO.UserLikeList getUserLikeList(Principal principal) throws BaseException{
+        try{
+            UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
+            List<UserProductEntity> products = userProductRepository.findAllByUserIdx(userEntity);
+            List<ProductDTO.GetProduct> likeProduct = new ArrayList<>();
+
+            for(UserProductEntity temp : products){
+                ProductEntity likeProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
+                likeProduct.add(new ProductDTO.GetProduct(
+                        likeProductInfo.getProductIdx(),
+                        likeProductInfo.getName(),
+                        likeProductInfo.getBrand(),
+                        likeProductInfo.getType(),
+                        likeProductInfo.getImage(),
+                        likeProductInfo.getLowestprice(),
+                        likeProductInfo.getProductId(),
+                        likeProductInfo.getProductUrl()
+                ));
+            }
+
+            return new UserDTO.UserLikeList(
+                    userEntity.getUserIdx(),
+                    likeProduct
+            );
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
     }
 }

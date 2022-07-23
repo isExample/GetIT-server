@@ -4,8 +4,10 @@ package com.example.getIt.product.service;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.entity.ProductEntity;
 import com.example.getIt.product.entity.ReviewEntity;
+import com.example.getIt.product.entity.UserProductEntity;
 import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.ReviewRepository;
+import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
@@ -40,17 +42,19 @@ public class ProductService {
     private String clientId;
     private String clientSecret;
     private ReviewRepository reviewRepository;
+    private UserProductRepository userProductRepository;
 //    private static final String clientId = "YOUR_CLIENT_ID";
 //    private static final String clientSecret = "YOUR_CLIENT_SECRET";
 
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
-                          ReviewRepository reviewRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret){
+                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret){
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
+        this.userProductRepository = userProductRepository;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -199,8 +203,6 @@ public class ProductService {
                     .type(product.getType())
                     .image(product.getImage())
                     .lowestprice(product.getLowestprice())
-                    .ram(product.getRam())
-                    .cpu(product.getCpu())
                     .date(product.getDate())
                     .description(product.getDescription())
                     .build();
@@ -221,5 +223,41 @@ public class ProductService {
                     .build();
             this.reviewRepository.save(review);
         }
+    }
+
+    public void postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
+        if(!(this.userRepository.existsByEmail(principal.getName()))){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        if(product.getProductId() == null){
+            throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+        }
+        if(product.getType() == null){
+            throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
+        }
+        if(product.getDetail() == null){
+            throw new BaseException(BaseResponseStatus.POST_DETAIL_EMPTY);
+        }
+        ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+        if(productEntity == null){
+            productEntity = ProductEntity.builder()
+                    .productId(product.getProductId())
+                    .productUrl(product.getProductUrl())
+                    .type(product.getType())
+                    .name(product.getName())
+                    .brand(product.getBrand())
+                    .image(product.getImage())
+                    .date(product.getDate())
+                    .description(product.getDescription())
+                    .lowestprice(product.getLowestprice())
+                    .detail(product.getDetail())
+                    .build();
+            this.productRepository.save(productEntity);
+        }
+        UserProductEntity like = UserProductEntity.builder()
+                .userEntity(this.userRepository.findByEmail(principal.getName()).get())
+                .productEntity(productEntity)
+                .build();
+        this.userProductRepository.save(like);
     }
 }
