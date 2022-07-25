@@ -1,5 +1,6 @@
 package com.example.getIt.user.entity;
 
+import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.util.BaseEntity;
 import com.example.getIt.util.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,6 +10,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -49,9 +52,13 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "userIdx", orphanRemoval = true)
+    private List<ReviewEntity> reviews = new ArrayList<>();
+
+
     @Builder
     public UserEntity(String nickName, String email, String password, Integer birthday,
-                      String job, String profileImgUrl, String provider, String status, Role role){
+                      String job, String profileImgUrl, String provider, String status, Role role, List<ReviewEntity> reviews){
         this.nickname = nickName;
         this.email = email;
         this.password = password;
@@ -61,6 +68,7 @@ public class UserEntity extends BaseEntity {
         this.status = status;
         this.provider = provider;
         this.role = role;
+        this.reviews = reviews;
     }
     public UserEntity update(String nickname, String profileImgUrl){
         this.nickname = nickname;

@@ -90,7 +90,6 @@ public class UserController {
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
-
     }
 
     @PostMapping("/reissue")

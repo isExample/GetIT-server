@@ -2,6 +2,7 @@ package com.example.getIt.user.DTO;
 
 
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.util.Role;
 import lombok.*;
 
@@ -40,6 +41,7 @@ public class UserDTO {
         private String status;
         private Role role;
         private List<ProductDTO.GetProduct> likeProduct;
+        private List<UserReviewList> review;
         public UserProtected(){}
 
     }
@@ -64,5 +66,16 @@ public class UserDTO {
     public static class UserLikeList{
         private Long userIdx;
         private List<ProductDTO.GetProduct> likeProduct;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserReviewList{
+        private Long userIdx;
+        private String review;
+        private String reviewImgUrl;
+        private ProductDTO.GetProduct reviewList;
     }
 }
