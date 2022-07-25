@@ -61,48 +61,9 @@ public class ProductService {
         return getProducts;
     }
 
-    public void getProduct(String productIdx) throws BaseException, IOException {
-        String url = "https://search.shopping.naver.com/catalog/"+productIdx;
-        Document doc = Jsoup.connect(url).get();
-        Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
-        Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
-        String[] productinfo = new String[contents.size()];
-        System.out.println(namecontents.text());
-        for (int i = 0; i < contents.size(); i++) {
-            productinfo[i]=contents.get(i).text();
-        }
-        for (int j = 0; j< productinfo.length; j++){
-            boolean b = productinfo[j].contains("CPU") || productinfo[j].contains("크기") || productinfo[j].contains("램") || productinfo[j].contains("무게") || productinfo[j].contains("품목");
-            boolean c = productinfo[j].contains("내장메모리") || productinfo[j].contains("통신규격") || productinfo[j].contains("운영체제");
-            boolean d = productinfo[j].contains("SSD")||productinfo[j].contains("HDD");
-            boolean s = productinfo[j].contains("품목")||productinfo[j].contains("출력")||productinfo[j].contains("단자")||productinfo[j].contains("무게");
-            if(productinfo[j].contains("스마트폰")){
-                if(b||c){
-                    System.out.println(productinfo[j]);
-                }
-            }
-            else if(productinfo[j].contains("데스크탑")){
-                if(b||d){
-                    System.out.println(productinfo[j]);
-                }
-            }
-            else if(productinfo[j].contains("패드")){
-                if(b||c){
-                    System.out.println(productinfo[j]);
-                }
-            }
-            else if(productinfo[j].contains("스피커")){
-                if(s){
-                    System.out.println(productinfo[j]);
-                }
-            }
-            else{
-                if(b||c||d){
-                    System.out.println(productinfo[j]);
-                }
-            }
-            }
-        }
+    public List<String> getProduct(String productIdx) throws BaseException, IOException {
+        return getProductDetailList(productIdx);
+    }
 
     public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
         try {
@@ -184,17 +145,17 @@ public class ProductService {
 
     public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
-        if(optional.isEmpty()){
+        if (optional.isEmpty()) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
-        if(product.getProductId() == null){
+        if (product.getProductId() == null) {
             throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
         }
-        if(product.getReview() == null){
+        if (product.getReview() == null) {
             throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
         }
         ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
-        if(productEntity == null){
+        if (productEntity == null) {
             ProductEntity newProduct = ProductEntity.builder()
                     .productId(product.getProductId())
                     .productUrl(product.getProductUrl())
@@ -214,7 +175,7 @@ public class ProductService {
                     .reviewImgUrl(product.getReviewImgUrl())
                     .build();
             this.reviewRepository.save(review);
-        }else{
+        } else {
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(productEntity)
@@ -226,20 +187,20 @@ public class ProductService {
     }
 
     public void postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
-        if(!(this.userRepository.existsByEmail(principal.getName()))){
+        if (!(this.userRepository.existsByEmail(principal.getName()))) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
-        if(product.getProductId() == null){
+        if (product.getProductId() == null) {
             throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
         }
-        if(product.getType() == null){
+        if (product.getType() == null) {
             throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
         }
-        if(product.getDetail() == null){
+        if (product.getDetail() == null) {
             throw new BaseException(BaseResponseStatus.POST_DETAIL_EMPTY);
         }
         ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
-        if(productEntity == null){
+        if (productEntity == null) {
             productEntity = ProductEntity.builder()
                     .productId(product.getProductId())
                     .productUrl(product.getProductUrl())
@@ -259,5 +220,55 @@ public class ProductService {
                 .productEntity(productEntity)
                 .build();
         this.userProductRepository.save(like);
+    }
+
+    public List<String> getProductDetailList(String productIdx) {
+        final String url = "https://search.shopping.naver.com/catalog/" + productIdx;
+        try {
+            Document doc = Jsoup.connect(url).get();
+            return getProductDetailList(doc);
+        } catch (IOException ignored) {
+        }
+        return null;
+    }
+
+    public List<String> getProductDetailList(Document doc) {
+        Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
+        Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
+        String[] productinfo = new String[contents.size()];
+        System.out.println(namecontents.text());
+        for (int i = 0; i < contents.size(); i++) {
+            productinfo[i] = contents.get(i).text();
+        }
+
+        List<String> List = new ArrayList<>();
+        for (int j = 0; j < productinfo.length; j++) {
+            boolean b = productinfo[j].contains("CPU") || productinfo[j].contains("크기") || productinfo[j].contains("램") || productinfo[j].contains("무게") || productinfo[j].contains("품목");
+            boolean c = productinfo[j].contains("내장메모리") || productinfo[j].contains("통신규격") || productinfo[j].contains("운영체제");
+            boolean d = productinfo[j].contains("SSD") || productinfo[j].contains("HDD");
+            boolean s = productinfo[j].contains("품목") || productinfo[j].contains("출력") || productinfo[j].contains("단자") || productinfo[j].contains("무게");
+            if (productinfo[j].contains("스마트폰")) {
+                if (b || c) {
+                    List.add(productinfo[j]);
+                }
+            } else if (productinfo[j].contains("데스크탑")) {
+                if (b || d) {
+                    List.add(productinfo[j]);
+                }
+            } else if (productinfo[j].contains("패드")) {
+                if (b || c) {
+                    List.add(productinfo[j]);
+                }
+            } else if (productinfo[j].contains("스피커")) {
+                if (s) {
+                    List.add(productinfo[j]);
+                }
+            } else {
+                if (b || c || d) {
+                    List.add(productinfo[j]);
+                }
+            }
+        }
+        return List;
     }
 }

@@ -32,10 +32,10 @@ public class ProductController {
     //상품 조회
     @ResponseBody
     @GetMapping("/{productIdx}")
-    public BaseResponse<String> getProduct(@PathVariable("productIdx") String productIdx){
+    public BaseResponse<List<String>> getProduct(@PathVariable("productIdx") String productIdx){
             try {
-               productService.getProduct(productIdx);
-                return new BaseResponse<>("5");
+                List<String> Detail = productService.getProduct(productIdx);
+                return new BaseResponse<>(Detail);
             } catch (BaseException e) {
                 return new BaseResponse<>(e.getStatus());
             } catch (IOException e) {
