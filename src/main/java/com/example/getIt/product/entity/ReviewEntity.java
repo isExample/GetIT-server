@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class ReviewEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reveiwIdx;
+    private Long reviewIdx;
 
     @ManyToOne
     @JoinColumn(name = "userIdx")

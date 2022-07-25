@@ -1,5 +1,7 @@
 package com.example.getIt.user.service;
 
+import com.example.getIt.product.entity.ReviewEntity;
+import com.example.getIt.product.repository.ReviewRepository;
 import com.example.getIt.user.jwt.entity.RefreshTokenEntity;
 import com.example.getIt.user.jwt.repository.RefreshTokenRepository;
 import com.example.getIt.user.jwt.DTO.TokenDTO;
@@ -36,13 +38,15 @@ public class UserService {
     private TokenProvider tokenProvider;
     private RefreshTokenRepository refreshTokenRepository;
     private AuthenticationManagerBuilder authenticationManagerBuilder;
+    private ReviewRepository reviewRepository;
 
 
 
     public UserService(UserRepository userRepository, UserProductRepository userProductRepository,
                        ProductRepository productRepository, PasswordEncoder passwordEncoder,
                        TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository,
-                       AuthenticationManagerBuilder authenticationManagerBuilder){
+                       AuthenticationManagerBuilder authenticationManagerBuilder,
+                       ReviewRepository reviewRepository){
         this.userRepository = userRepository;
         this.userProductRepository = userProductRepository;
         this.productRepository = productRepository;
@@ -50,6 +54,7 @@ public class UserService {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
+        this.reviewRepository = reviewRepository;
     }
 
     public TokenDTO signIn(UserDTO.User user) throws BaseException {
@@ -141,6 +146,7 @@ public class UserService {
     public UserDTO.UserProtected getUser(Principal principal) throws BaseException {
         try{
             UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
+            List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
 
             return new UserDTO.UserProtected(
@@ -151,7 +157,8 @@ public class UserService {
                     userEntity.getJob(),
                     userEntity.getStatus(),
                     userEntity.getRole(),
-                    userLikeList.getLikeProduct()
+                    userLikeList.getLikeProduct(),
+                    userReviewList
             );
         }catch (Exception e){
             System.out.println("Error: "+e);
@@ -159,6 +166,8 @@ public class UserService {
         }
 
     }
+
+
 
     public TokenDTO reissue(TokenDTO tokenRequestDto) { //재발급
         // 1. Refresh Token 검증
@@ -245,6 +254,36 @@ public class UserService {
                     userEntity.getUserIdx(),
                     likeProduct
             );
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
+
+    private List<UserDTO.UserReviewList> getUserReviewList(Principal principal) throws BaseException {
+        try{
+            UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
+            List<ReviewEntity> products = reviewRepository.findAllByUserIdx(userEntity);
+            List<UserDTO.UserReviewList> reviewList = new ArrayList<>();
+
+            for(ReviewEntity temp : products){
+                ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
+                UserDTO.UserReviewList review = new UserDTO.UserReviewList();
+                review.setUserIdx(temp.getUserIdx().getUserIdx());
+                review.setReview(temp.getReview());
+                review.setReviewImgUrl(temp.getReviewImgUrl());
+                review.setReviewList(new ProductDTO.GetProduct(
+                        reviewProductInfo.getProductIdx(),
+                        reviewProductInfo.getName(),
+                        reviewProductInfo.getBrand(),
+                        reviewProductInfo.getType(),
+                        reviewProductInfo.getImage(),
+                        reviewProductInfo.getLowestprice(),
+                        reviewProductInfo.getProductId(),
+                        reviewProductInfo.getProductUrl()));
+                reviewList.add(review);
+            }
+            return reviewList;
         }catch (Exception e){
             System.out.println("Error: "+e);
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);

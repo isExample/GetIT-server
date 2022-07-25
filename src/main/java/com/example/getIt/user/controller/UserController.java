@@ -90,6 +90,10 @@ public class UserController {
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
+    }
 
+    @PostMapping("/reissue")
+    public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto) { //RequestBody로 Access Token + Refresh Token를 받는다.
+        return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto));
     }
 }
