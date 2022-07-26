@@ -43,11 +43,10 @@ public class ProductService {
     private String clientSecret;
     private ReviewRepository reviewRepository;
     private UserProductRepository userProductRepository;
-//    private static final String clientId = "YOUR_CLIENT_ID";
-//    private static final String clientSecret = "YOUR_CLIENT_SECRET";
-
+    //    private static final String clientId = "YOUR_CLIENT_ID";
+    //    private static final String clientSecret = "YOUR_CLIENT_SECRET";
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
-                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret){
+                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.clientId = clientId;
@@ -61,7 +60,7 @@ public class ProductService {
         return getProducts;
     }
 
-    public List<String> getProduct(String productIdx) throws BaseException, IOException {
+    public ProductDTO.GetDetail getProduct(String productIdx) throws BaseException, IOException {
         return getProductDetailList(productIdx);
     }
 
@@ -73,20 +72,20 @@ public class ProductService {
             headers.add("X-Naver-Client-Id", clientId);
             headers.add("X-Naver-Client-Secret", clientSecret);
             String body = "";
-            apiUrl += getCategoryRes.getType()+","+getCategoryRes.getRequirement();
+            apiUrl += getCategoryRes.getType() + "," + getCategoryRes.getRequirement();
             apiUrl = apiUrl.replace(",null", "");
             HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
             ResponseEntity<String> responseEntity = rest.exchange(apiUrl, HttpMethod.GET, requestEntity, String.class);
             JSONObject rjson = new JSONObject(responseEntity.getBody());
             JSONArray items = rjson.getJSONArray("items");
-            if(items.isEmpty()){
+            if (items.isEmpty()) {
                 throw new Exception();
-            }else{
+            } else {
                 List<ProductDTO.GetProductList> result = new ArrayList<>();
-                for (int i=0; i<items.length(); i++){
+                for (int i = 0; i < items.length(); i++) {
                     JSONObject eachItem = (JSONObject) items.get(i);
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
-                    product.setProductUrl("https://search.shopping.naver.com/catalog/"+product.getProductUrl());
+                    product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                     result.add(product);
                 }
                 return result;
@@ -100,7 +99,7 @@ public class ProductService {
         try {
             String[] categories = {"노트북", "핸드폰", "태블릿", "스피커", "데스크탑"};
             List<ProductDTO.GetProductList> result = new ArrayList<>();
-            for(int i = 0; i < 5; i++) {
+            for (int i = 0; i < 5; i++) {
                 String query = categories[i];
                 ByteBuffer buffer = StandardCharsets.UTF_8.encode(query);
                 String encode = StandardCharsets.UTF_8.decode(buffer).toString();
@@ -125,9 +124,9 @@ public class ProductService {
                 ResponseEntity<String> responseEntity = restTemplate.exchange(req, String.class);
                 JSONObject rjson = new JSONObject(responseEntity.getBody());
                 JSONArray items = rjson.getJSONArray("items");
-                if(items.isEmpty()){
+                if (items.isEmpty()) {
                     throw new Exception();
-                }else {
+                } else {
                     for (int j = 0; j < items.length(); j++) {
                         JSONObject eachItem = (JSONObject) items.get(j);
                         ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
@@ -222,7 +221,7 @@ public class ProductService {
         this.userProductRepository.save(like);
     }
 
-    public List<String> getProductDetailList(String productIdx) {
+    public ProductDTO.GetDetail getProductDetailList(String productIdx) {
         final String url = "https://search.shopping.naver.com/catalog/" + productIdx;
         try {
             Document doc = Jsoup.connect(url).get();
@@ -232,43 +231,217 @@ public class ProductService {
         return null;
     }
 
-    public List<String> getProductDetailList(Document doc) {
+    public ProductDTO.GetDetail getProductDetailList(Document doc) {
         Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
         Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
         String[] productinfo = new String[contents.size()];
-        System.out.println(namecontents.text());
+        String[] content = new String[contents.size()];
+
+        List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
+        ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
+
+        productDetail.setName(namecontents.text());
         for (int i = 0; i < contents.size(); i++) {
             productinfo[i] = contents.get(i).text();
+            content[i] = productinfo[i].substring(productinfo[i].lastIndexOf(":")+2);
         }
-
-        List<String> List = new ArrayList<>();
-        for (int j = 0; j < productinfo.length; j++) {
-            boolean b = productinfo[j].contains("CPU") || productinfo[j].contains("크기") || productinfo[j].contains("램") || productinfo[j].contains("무게") || productinfo[j].contains("품목");
-            boolean c = productinfo[j].contains("내장메모리") || productinfo[j].contains("통신규격") || productinfo[j].contains("운영체제");
-            boolean d = productinfo[j].contains("SSD") || productinfo[j].contains("HDD");
-            boolean s = productinfo[j].contains("품목") || productinfo[j].contains("출력") || productinfo[j].contains("단자") || productinfo[j].contains("무게");
-            if (productinfo[j].contains("스마트폰")) {
-                if (b || c) {
-                    List.add(productinfo[j]);
+        for (int j = 0; j < content.length; j++) {
+           if (productinfo[j].contains("스마트폰")) {
+                if (productinfo[j].contains("CPU속도")) {
+                   productDetail.setCpurate(content[j]);
+                   DetailDTO.add(productDetail);
                 }
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                    productDetail.setCpu(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어종류")){
+                    productDetail.setCore(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("크기")){
+                    productDetail.setSize(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("램")){
+                    productDetail.setRam(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("무게")){
+                    productDetail.setWeight(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("품목")){
+                    productDetail.setType(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+
+                if(productinfo[j].contains("내장메모리")){
+                    productDetail.setInnermemory(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("통신규격")){
+                    productDetail.setCommunication(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("운영체제")){
+                    productDetail.setOs(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+
             } else if (productinfo[j].contains("데스크탑")) {
-                if (b || d) {
-                    List.add(productinfo[j]);
+               if (productinfo[j].contains("CPU속도")) {
+                   productDetail.setCpurate(content[j]);
+                   DetailDTO.add(productDetail);
+               }
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                    productDetail.setCpu(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어종류")){
+                   productDetail.setCore(content[j]);
+                   DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("크기")){
+                    productDetail.setSize(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("램")){
+                    productDetail.setRam(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("무게")){
+                    productDetail.setWeight(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("품목")){
+                    productDetail.setType(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+
+                if(productinfo[j].contains("SSD")){
+                    productDetail.setSsd(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("HDD")){
+                    productDetail.setHdd(content[j]);
+                    DetailDTO.add(productDetail);
                 }
             } else if (productinfo[j].contains("패드")) {
-                if (b || c) {
-                    List.add(productinfo[j]);
+               if (productinfo[j].contains("CPU속도")) {
+                   productDetail.setCpurate(content[j]);
+                   DetailDTO.add(productDetail);
+               }
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                    productDetail.setCpu(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어종류")){
+                   productDetail.setCore(content[j]);
+                   DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("크기")){
+                    productDetail.setSize(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("램")){
+                    productDetail.setRam(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("무게")){
+                    productDetail.setWeight(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("품목")){
+                    productDetail.setType(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+
+                if(productinfo[j].contains("내장메모리")){
+                    productDetail.setInnermemory(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("통신규격")){
+                    productDetail.setCommunication(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("운영체제")){
+                    productDetail.setOs(content[j]);
+                    DetailDTO.add(productDetail);
                 }
             } else if (productinfo[j].contains("스피커")) {
-                if (s) {
-                    List.add(productinfo[j]);
+                if(productinfo[j].contains("품목")){
+                    productDetail.setType(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("출력")){
+                    productDetail.setOutput(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("단자")){
+                    productDetail.setTerminal(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("무게")){
+                    productDetail.setWeight(content[j]);
+                    DetailDTO.add(productDetail);
                 }
             } else {
-                if (b || c || d) {
-                    List.add(productinfo[j]);
+               if (productinfo[j].contains("CPU속도")) {
+                   productDetail.setCpurate(content[j]);
+                   DetailDTO.add(productDetail);
+               }
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                    productDetail.setCpu(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어종류")){
+                   productDetail.setCore(content[j]);
+                   DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("크기")){
+                    productDetail.setSize(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("램")){
+                    productDetail.setRam(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("무게")){
+                    productDetail.setWeight(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("품목")){
+                    productDetail.setType(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+
+                if(productinfo[j].contains("내장메모리")){
+                    productDetail.setInnermemory(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("통신규격")){
+                    productDetail.setCommunication(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("운영체제")){
+                    productDetail.setOs(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("내장메모리")){
+                    productDetail.setInnermemory(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("통신규격")){
+                    productDetail.setCommunication(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if(productinfo[j].contains("운영체제")){
+                    productDetail.setOs(content[j]);
+                    DetailDTO.add(productDetail);
                 }
             }
         }
-        return List;
+        return productDetail;
     }
 }
