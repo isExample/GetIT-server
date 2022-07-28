@@ -251,7 +251,7 @@ public class ProductService {
                    productDetail.setCpurate(content[j]);
                    DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")||productinfo[j].contains("셀러론")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }

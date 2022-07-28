@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,6 +46,25 @@ public class ProductController {
 
         }
 
+    // 상품 비교
+    @ResponseBody
+    @GetMapping("/comparison/{productIdx1}/{productIdx2}")
+    public BaseResponse<List<ProductDTO.GetDetail>> compareProduct(@PathVariable("productIdx1") String productIdx1, @PathVariable("productIdx2") String productIdx2){
+        try {
+            ProductDTO.GetDetail Detail1 = productService.getProduct(productIdx1);
+            ProductDTO.GetDetail Detail2 = productService.getProduct(productIdx2);
+            List<ProductDTO.GetDetail> compare = new ArrayList<>();
+            compare.add(Detail1);
+            compare.add(Detail2);
+            return new BaseResponse<>(compare);
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new BaseResponse<>(null);
+        }
+
+    }
     @ResponseBody
     @GetMapping("/category")
     public BaseResponse<List<ProductDTO.GetProductList>> getCategory(@RequestBody ProductDTO.GetCategoryRes getCategoryRes){
