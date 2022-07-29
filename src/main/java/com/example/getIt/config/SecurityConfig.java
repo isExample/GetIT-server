@@ -58,7 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/users/login").permitAll()
                 .antMatchers("/users/sign-in").permitAll()
-                .antMatchers("/products//{productIdx}").permitAll()
+                .antMatchers("/products/{productIdx}").permitAll()
+                .antMatchers("/products/all").permitAll()
+                .antMatchers("/products/category").permitAll()
+                .antMatchers("/products/comparison/{productIdx1}/{productIdx2}").permitAll()
+                .antMatchers("/products/list").permitAll()
                 .anyRequest().authenticated()  // 나머지 API 는 전부 인증 필요
 
 

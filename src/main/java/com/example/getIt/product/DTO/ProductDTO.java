@@ -106,7 +106,7 @@ public class ProductDTO {
     @Getter
     @Setter
     @ToString
-//    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class GetDetail {
         private String name;
         private String brand;
