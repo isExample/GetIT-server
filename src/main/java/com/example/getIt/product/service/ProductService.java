@@ -43,8 +43,6 @@ public class ProductService {
     private String clientSecret;
     private ReviewRepository reviewRepository;
     private UserProductRepository userProductRepository;
-    //    private static final String clientId = "YOUR_CLIENT_ID";
-    //    private static final String clientSecret = "YOUR_CLIENT_SECRET";
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret) {
         this.productRepository = productRepository;
@@ -160,11 +158,20 @@ public class ProductService {
                     .productUrl(product.getProductUrl())
                     .name(product.getName())
                     .brand(product.getBrand())
+                    .date(product.getCpu())
+                    .cpurate(product.getCpurate())
+                    .core(product.getCore())
+                    .size(product.getSize())
+                    .ram(product.getRam())
+                    .weight(product.getWeight())
                     .type(product.getType())
-                    .image(product.getImage())
-                    .lowestprice(product.getLowestprice())
-                    .date(product.getDate())
-                    .description(product.getDescription())
+                    .innermemory(product.getInnermemory())
+                    .communication(product.getCommunication())
+                    .os(product.getOs())
+                    .ssd(product.getSsd())
+                    .hdd(product.getHdd())
+                    .output(product.getOutput())
+                    .terminal(product.getTerminal())
                     .build();
             this.productRepository.save(newProduct);
             ReviewEntity review = ReviewEntity.builder()
@@ -195,22 +202,30 @@ public class ProductService {
         if (product.getType() == null) {
             throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
         }
-        if (product.getDetail() == null) {
-            throw new BaseException(BaseResponseStatus.POST_DETAIL_EMPTY);
-        }
+//        if (product.getDetail() == null) {
+//            throw new BaseException(BaseResponseStatus.POST_DETAIL_EMPTY);
+//        }
         ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
         if (productEntity == null) {
             productEntity = ProductEntity.builder()
                     .productId(product.getProductId())
                     .productUrl(product.getProductUrl())
-                    .type(product.getType())
                     .name(product.getName())
                     .brand(product.getBrand())
-                    .image(product.getImage())
-                    .date(product.getDate())
-                    .description(product.getDescription())
-                    .lowestprice(product.getLowestprice())
-                    .detail(product.getDetail())
+                    .date(product.getCpu())
+                    .cpurate(product.getCpurate())
+                    .core(product.getCore())
+                    .size(product.getSize())
+                    .ram(product.getRam())
+                    .weight(product.getWeight())
+                    .type(product.getType())
+                    .innermemory(product.getInnermemory())
+                    .communication(product.getCommunication())
+                    .os(product.getOs())
+                    .ssd(product.getSsd())
+                    .hdd(product.getHdd())
+                    .output(product.getOutput())
+                    .terminal(product.getTerminal())
                     .build();
             this.productRepository.save(productEntity);
         }
@@ -233,14 +248,16 @@ public class ProductService {
 
     public ProductDTO.GetDetail getProductDetailList(Document doc) {
         Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
+        Elements comAndDatecontents = doc.select("div.top_info_inner__1cEYE > span");
         Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
 
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
-
         productDetail.setName(namecontents.text());
+        productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
+        productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
         for (int i = 0; i < contents.size(); i++) {
             productinfo[i] = contents.get(i).text();
             content[i] = productinfo[i].substring(productinfo[i].lastIndexOf(":")+2);
