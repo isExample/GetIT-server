@@ -14,6 +14,7 @@ import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
+import com.example.getIt.util.NaverSearchAPI;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -44,6 +45,7 @@ public class ProductService {
     private String clientSecret;
     private ReviewRepository reviewRepository;
     private UserProductRepository userProductRepository;
+    private NaverSearchAPI naverSearchAPI;
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret) {
         this.productRepository = productRepository;
@@ -53,6 +55,8 @@ public class ProductService {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userProductRepository = userProductRepository;
+
+        this.naverSearchAPI = new NaverSearchAPI(this.clientId, this.clientSecret);
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -65,18 +69,9 @@ public class ProductService {
 
     public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
         try {
-            String apiUrl = "https://openapi.naver.com/v1/search/shop.json?query=";
-            RestTemplate rest = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("X-Naver-Client-Id", clientId);
-            headers.add("X-Naver-Client-Secret", clientSecret);
-            String body = "";
-            apiUrl += getCategoryRes.getType() + "," + getCategoryRes.getRequirement();
-            apiUrl = apiUrl.replace(",null", "");
-            HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-            ResponseEntity<String> responseEntity = rest.exchange(apiUrl, HttpMethod.GET, requestEntity, String.class);
-            JSONObject rjson = new JSONObject(responseEntity.getBody());
-            JSONArray items = rjson.getJSONArray("items");
+            String query = getCategoryRes.getType() + "," + getCategoryRes.getRequirement();
+            query = query.replace(",null", "");
+            JSONArray items = this.naverSearchAPI.itemsList(query);
             if (items.isEmpty()) {
                 throw new Exception();
             } else {
@@ -478,6 +473,31 @@ public class ProductService {
             }
             return reviewList;
         }catch(Exception e) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
+        }
+    }
+
+    public List<ProductDTO.GetProductList> getRecommProducts(String topic) throws BaseException{
+        try {
+            // Search
+            this.naverSearchAPI.setDisplay(20);
+            JSONArray items = this.naverSearchAPI.itemsList(topic);
+            // Create Random Number(1~20)
+            List<Integer> randomNum = new ArrayList<>();
+            for(int i=1; i<20; i++){
+                randomNum.add(i);
+            }
+            Collections.shuffle(randomNum);
+            // Get Random Product
+            List<ProductDTO.GetProductList> RecommProducts = new ArrayList<>();
+            for(int i=0; i<6; i++){
+                JSONObject eachItem = (JSONObject) items.get(randomNum.get(i));
+                ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
+                product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
+                RecommProducts.add(product);
+            }
+            return RecommProducts;
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
         }
     }
