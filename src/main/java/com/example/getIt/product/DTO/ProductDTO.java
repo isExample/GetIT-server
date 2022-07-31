@@ -127,5 +127,14 @@ public class ProductDTO {
         private String terminal; // 단자
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ReviewList{
+        private String nickName;
+        private String review;
+        private String reviewImgUrl;
+    }
 
 }

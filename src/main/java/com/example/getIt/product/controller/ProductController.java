@@ -111,4 +111,16 @@ public class ProductController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @ResponseBody
+    @GetMapping("/review/{productIdx}")
+    public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productIdx") String productIdx){
+        try{
+            List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productIdx);
+            return new BaseResponse<>(getReviewList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
 }

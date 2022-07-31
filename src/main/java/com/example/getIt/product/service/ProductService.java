@@ -9,6 +9,7 @@ import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.ReviewRepository;
 import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
+import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
@@ -460,5 +461,24 @@ public class ProductService {
             }
         }
         return productDetail;
+    }
+
+    public List<ProductDTO.ReviewList> getReviewList(String productIdx) throws BaseException {
+        try{
+            ProductEntity productEntity = productRepository.findAllByProductIdx(Long.parseLong(productIdx));
+            List<ReviewEntity> reviewEntity = reviewRepository.findAllByProductIdx(productEntity);
+            List<ProductDTO.ReviewList> reviewList = new ArrayList<>();
+
+            for(ReviewEntity i : reviewEntity){
+                ProductDTO.ReviewList review = new ProductDTO.ReviewList();
+                review.setNickName(i.getUserIdx().getNickname());
+                review.setReview(i.getReview());
+                review.setReviewImgUrl(i.getReviewImgUrl());
+                reviewList.add(review);
+            }
+            return reviewList;
+        }catch(Exception e) {
+            throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
+        }
     }
 }
