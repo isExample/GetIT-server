@@ -80,4 +80,8 @@ public class UserEntity extends BaseEntity {
         return this.role.name();
     }
     public void changePwd(String pwd){this.password = pwd;}
+    public void changeProfile(String nickname, String profileImgUrl){
+        this.nickname = nickname;
+        this.profileImgUrl = profileImgUrl;
+    }
 }

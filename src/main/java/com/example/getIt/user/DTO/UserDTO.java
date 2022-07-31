@@ -78,4 +78,12 @@ public class UserDTO {
         private String reviewImgUrl;
         private ProductDTO.GetProduct reviewList;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class UserProfile {
+        private String nickName;
+        private String profileImgUrl;
+    }
 }

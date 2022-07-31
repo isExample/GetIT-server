@@ -96,4 +96,15 @@ public class UserController {
     public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto) { //RequestBody로 Access Token + Refresh Token를 받는다.
         return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto));
     }
+
+    @ResponseBody
+    @PatchMapping("/profile")
+    public BaseResponse<String> patchProfile(Principal principal, @RequestBody UserDTO.UserProfile user){
+        try {
+            this.userService.patchProfile(principal, user);
+            return new BaseResponse<>("프로필 정보를 변경했습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

@@ -289,4 +289,15 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
+
+    public void patchProfile(Principal principal, UserDTO.UserProfile user) throws BaseException{
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isPresent()){
+            UserEntity userEntity = optional.get();
+            userEntity.changeProfile(user.getNickName(), user.getProfileImgUrl());
+            userRepository.save(userEntity);
+        }else{
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+    }
 }
