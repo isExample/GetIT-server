@@ -137,4 +137,17 @@ public class ProductDTO {
         private String reviewImgUrl;
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Data
+    public static class Recommend{
+        private String relKeyword;
+
+        public Recommend(JSONObject jsonObject) {
+            this.relKeyword = jsonObject.getString("relKeyword");
+        }
+    }
+
 }

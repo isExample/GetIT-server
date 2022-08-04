@@ -1,6 +1,7 @@
 package com.example.getIt.product.service;
 
 
+import com.example.getIt.config.Signatures;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.entity.ProductEntity;
 import com.example.getIt.product.entity.ReviewEntity;
@@ -9,12 +10,12 @@ import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.ReviewRepository;
 import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
-import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
 import com.example.getIt.util.NaverSearchAPI;
+import com.nimbusds.jose.shaded.json.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -26,8 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URI;
+import java.io.InputStreamReader;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -46,8 +49,13 @@ public class ProductService {
     private ReviewRepository reviewRepository;
     private UserProductRepository userProductRepository;
     private NaverSearchAPI naverSearchAPI;
+    private String recommend_accessKey;
+    private String recommend_secretKey;
+    private String recommend_customerId;
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
-                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret) {
+                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
+                          @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
+                          @Value("${recommend.secretKey}") String recommend_secretKey) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.clientId = clientId;
@@ -57,6 +65,10 @@ public class ProductService {
         this.userProductRepository = userProductRepository;
 
         this.naverSearchAPI = new NaverSearchAPI(this.clientId, this.clientSecret);
+
+        this.recommend_customerId = recommend_customerId;
+        this.recommend_accessKey = recommend_accessKey;
+        this.recommend_secretKey = recommend_secretKey;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -232,7 +244,7 @@ public class ProductService {
         this.userProductRepository.save(like);
     }
 
-    public ProductDTO.GetDetail getProductDetailList(String productIdx) {
+    public ProductDTO.GetDetail getProductDetailList(String productIdx) throws BaseException{
         final String url = "https://search.shopping.naver.com/catalog/" + productIdx;
         try {
             Document doc = Jsoup.connect(url).get();
@@ -242,13 +254,12 @@ public class ProductService {
         return null;
     }
 
-    public ProductDTO.GetDetail getProductDetailList(Document doc) {
+    public ProductDTO.GetDetail getProductDetailList(Document doc) throws BaseException{
         Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
         Elements comAndDatecontents = doc.select("div.top_info_inner__1cEYE > span");
         Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
-
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
         productDetail.setName(namecontents.text());
@@ -500,5 +511,77 @@ public class ProductService {
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
         }
+    }
+
+    public List<ProductDTO.Recommend> recommend(String keyWord) throws BaseException {
+        if(keyWord == null){
+            keyWord = "노트북";
+        }
+        String baseUrl = "https://api.naver.com";
+        String path = "/keywordstool";
+        String accessKey = this.recommend_accessKey; // 액세스키
+        String secretKey = this.recommend_secretKey;  // 시크릿키
+        String customerId = this.recommend_customerId;  // ID
+        String parameter = "hintKeywords=";
+        long timeStamp = System.currentTimeMillis();
+        URL url = null;
+        String times = String.valueOf(timeStamp);
+
+        try {
+            keyWord = URLEncoder.encode(keyWord, "UTF-8");
+            System.out.println("keyword : "+keyWord);
+        } catch (Exception e) {
+            throw new RuntimeException("인코딩 실패.");
+        }
+
+        try {
+            url = new URL(baseUrl+path+"?"+parameter+keyWord);
+            System.out.println("url : "+url);
+            String signature = Signatures.of(times,  "GET", path, secretKey);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+
+            con.setRequestMethod("GET");
+            con.setRequestProperty("X-Timestamp", times);
+            con.setRequestProperty("X-API-KEY", accessKey);
+            con.setRequestProperty("X-Customer", customerId);
+            con.setRequestProperty("X-Signature", signature);
+            con.setDoOutput(true);
+
+            int responseCode = con.getResponseCode();
+            BufferedReader br;
+            System.out.println("responseCode : "+responseCode);
+            if(responseCode == 200) {
+                br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+            }
+            else {
+                br = new BufferedReader(new InputStreamReader(con.getErrorStream(), "UTF-8"));
+            }
+
+            String inputLine;
+            StringBuffer response = new StringBuffer();
+            JSONObject responseJson=null;
+            ProductDTO.Recommend recommend = new ProductDTO.Recommend();
+            while((inputLine = br.readLine()) != null) {
+                response.append(inputLine);
+            }
+            br.close();
+            System.out.println(response.toString());
+            responseJson = new JSONObject(response.toString());
+            JSONArray items = responseJson.getJSONArray("keywordList");
+            List<ProductDTO.Recommend> recommends = new ArrayList<>();
+
+            int i = items.length();
+            if(i>10) i = 10;
+            for (int j = 0; j < i; j++) {
+                JSONObject eachItem = (JSONObject) items.get(j);
+                ProductDTO.Recommend product = new ProductDTO.Recommend(eachItem);
+                recommends.add(product);
+            }
+            return recommends;
+        } catch (Exception e) {
+            System.out.println("Wrong URL.");
+        }
+
+        return null;
     }
 }
