@@ -4,6 +4,8 @@ import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
+import org.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -96,6 +98,21 @@ public class ProductController {
         try {
             productService.postReview(principal, product);
             return new BaseResponse<>("리뷰 작성을 완료했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    /*
+     * 아리 : 추천 검색어
+     * */
+
+    @ResponseBody
+    @GetMapping("/recommend")
+    public BaseResponse<List<ProductDTO.Recommend>> recommend(@RequestParam(required = false) String keyword){
+        try {
+            List<ProductDTO.Recommend> a = productService.recommend(keyword);
+            return new BaseResponse<>(a);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
