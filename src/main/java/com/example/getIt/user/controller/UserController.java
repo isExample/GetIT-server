@@ -119,8 +119,6 @@ public class UserController {
             return new BaseResponse<>("프로필 정보를 변경했습니다.");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
-        } catch (IOException e){
-            return new BaseResponse<>("IO Exception Error");
         }
     }
 }

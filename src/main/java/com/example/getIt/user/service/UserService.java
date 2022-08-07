@@ -297,7 +297,7 @@ public class UserService {
         }
     }
 
-    public void patchProfile(Principal principal, UserDTO.UserProfile user, MultipartFile profileImg) throws BaseException, IOException {
+    public void patchProfile(Principal principal, UserDTO.UserProfile user, MultipartFile profileImg) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isPresent()){
             UserEntity userEntity = optional.get();
@@ -305,7 +305,12 @@ public class UserService {
                 throw new BaseException(BaseResponseStatus.SAME_NICKNAME);
             }
             if(!profileImg.isEmpty()){
-                String userProfileUrl = s3Uploader.upload(profileImg, "profile");
+                String userProfileUrl = null;
+                try {
+                    userProfileUrl = s3Uploader.upload(profileImg, "profile");
+                } catch (IOException e) {
+                    throw new BaseException(BaseResponseStatus.PATCH_PROFILE_IMG_ERROR);
+                }
                 userEntity.changeProfileImgUrl(userProfileUrl);
             }
             if(user.getNickName()!=null){
