@@ -7,6 +7,7 @@ import com.example.getIt.util.BaseResponse;
 import org.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -94,9 +95,10 @@ public class ProductController {
     * */
     @ResponseBody
     @PostMapping("/review")
-    public BaseResponse<String> postReview(Principal principal, @RequestBody ProductDTO.GetProductReview product){
+    public BaseResponse<String> postReview(Principal principal, @RequestPart(value = "product") ProductDTO.GetProductReview product,
+                                           @RequestPart(value = "reviewImg", required = false) MultipartFile reviewImg){
         try {
-            productService.postReview(principal, product);
+            productService.postReview(principal, product, reviewImg);
             return new BaseResponse<>("리뷰 작성을 완료했습니다.");
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

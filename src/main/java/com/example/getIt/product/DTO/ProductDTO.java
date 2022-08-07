@@ -25,6 +25,7 @@ public class ProductDTO {
     @Setter
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     @Builder
     public static class GetProductReview {
         private String name;
@@ -47,7 +48,6 @@ public class ProductDTO {
         private String productId;
         private String productUrl;
         private String review;
-        private String reviewImgUrl;
     }
 
     @Getter
