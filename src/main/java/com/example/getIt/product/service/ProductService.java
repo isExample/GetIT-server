@@ -13,10 +13,7 @@ import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.product.repository.WebsiteRepository;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
-import com.example.getIt.util.BaseException;
-import com.example.getIt.util.BaseResponseStatus;
-import com.example.getIt.util.NaverSearchAPI;
-import com.example.getIt.util.NaverShopSearch;
+import com.example.getIt.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -26,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.BufferedReader;
@@ -57,10 +55,13 @@ public class ProductService {
     private String recommend_accessKey;
     private String recommend_secretKey;
     private String recommend_customerId;
+    private S3Uploader s3Uploader;
+
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
                           @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
-                          @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch) {
+                          @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch,
+                          S3Uploader s3Uploader) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.clientId = clientId;
@@ -75,6 +76,7 @@ public class ProductService {
         this.recommend_accessKey = recommend_accessKey;
         this.recommend_secretKey = recommend_secretKey;
         this.naverShopSearch = naverShopSearch;
+        this.s3Uploader = s3Uploader;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -154,7 +156,7 @@ public class ProductService {
         }
     }
 
-    public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
+    public void postReview(Principal principal, ProductDTO.GetProductReview product, MultipartFile reviewImg) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if (optional.isEmpty()) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
@@ -164,6 +166,14 @@ public class ProductService {
         }
         if (product.getReview() == null) {
             throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
+        }
+        String reviewProfileUrl = null;
+        if(!reviewImg.isEmpty()){
+            try {
+                reviewProfileUrl = s3Uploader.upload(reviewImg, "review");
+            } catch (IOException e) {
+                throw new BaseException(BaseResponseStatus.POST_REVIEW_IMG_ERROR);
+            }
         }
         ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
         if (productEntity == null) {
@@ -192,7 +202,7 @@ public class ProductService {
                     .userEntity(optional.get())
                     .productEntity(newProduct)
                     .review(product.getReview())
-                    .reviewImgUrl(product.getReviewImgUrl())
+                    .reviewImgUrl(reviewProfileUrl)
                     .build();
             this.reviewRepository.save(review);
         } else {
@@ -200,7 +210,7 @@ public class ProductService {
                     .userEntity(optional.get())
                     .productEntity(productEntity)
                     .review(product.getReview())
-                    .reviewImgUrl(product.getReviewImgUrl())
+                    .reviewImgUrl(reviewProfileUrl)
                     .build();
             this.reviewRepository.save(review);
         }

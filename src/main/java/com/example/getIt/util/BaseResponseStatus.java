@@ -24,6 +24,7 @@ public enum BaseResponseStatus {
     POST_DETAIL_EMPTY(false, 4781, "DETAIL 내용이 공백입니다."),
     POST_USERS_INVALID_EMAIL(false, 5000, "이메일 양식이 맞지 않습니다."),
     POST_USERS_INVALID_PWD(false, 5001, "비밀번호 양식이 맞지 않습니다."),
+    POST_REVIEW_IMG_ERROR(false, 5001, "리뷰 이미지 에러입니다."),
 
     SOCIAL(false, 5001, "소셜로 로그인을 진행한 이메일 입니다."),
     NOT_SOCIAL(false, 2001, "소셜이 로그인으로 진행한 이메일입니다."),
@@ -36,7 +37,8 @@ public enum BaseResponseStatus {
     * 7000 : PATCH
     * */
     PASSWORD_EQUALS_NEWPASSWORD(false, 7000, "같은 비밀번호로는 새로운 비밀번호로 변경할 수 없습니다."),
-    SAME_NICKNAME(false, 7001, "같은 닉네임 변경을 진행하고 있습니다.");
+    SAME_NICKNAME(false, 7001, "같은 닉네임 변경을 진행하고 있습니다."),
+    PATCH_PROFILE_IMG_ERROR(false, 7002, "프로필 이미지 에러입니다.");
 
 
 
