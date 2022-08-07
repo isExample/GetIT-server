@@ -216,48 +216,58 @@ public class ProductService {
         }
     }
 
-    public void postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
-        if (!(this.userRepository.existsByEmail(principal.getName()))) {
-            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+    public String postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
+        try {
+            if (!(this.userRepository.existsByEmail(principal.getName()))) {
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+            if (product.getProductId() == null) {
+                throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+            }
+            if (product.getType() == null) {
+                throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
+            }
+            ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+            if (productEntity == null) {
+                productEntity = ProductEntity.builder()
+                        .productId(product.getProductId())
+                        .productUrl(product.getProductUrl())
+                        .name(product.getName())
+                        .brand(product.getBrand())
+                        .date(product.getCpu())
+                        .cpurate(product.getCpurate())
+                        .core(product.getCore())
+                        .size(product.getSize())
+                        .ram(product.getRam())
+                        .weight(product.getWeight())
+                        .type(product.getType())
+                        .innermemory(product.getInnermemory())
+                        .communication(product.getCommunication())
+                        .os(product.getOs())
+                        .ssd(product.getSsd())
+                        .hdd(product.getHdd())
+                        .output(product.getOutput())
+                        .terminal(product.getTerminal())
+                        .build();
+                this.productRepository.save(productEntity);
+            }
+            UserEntity userEntity = this.userRepository.findByEmail(principal.getName()).get();
+            UserProductEntity userProductEntity = this.userProductRepository.findAllByUserIdxAndProductIdx(userEntity, productEntity);
+            if(userProductEntity == null){
+                UserProductEntity like = UserProductEntity.builder()
+                        .userEntity(userEntity)
+                        .productEntity(productEntity)
+                        .build();
+                this.userProductRepository.save(like);
+                return "좋아요 목록에 추가되었습니다.";
+            }else{
+                this.userProductRepository.deleteByUserProductIdx(userProductEntity.getUserProductIdx());
+                return "좋아요를 취소하였습니다.";
+            }
+
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
-        if (product.getProductId() == null) {
-            throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
-        }
-        if (product.getType() == null) {
-            throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
-        }
-//        if (product.getDetail() == null) {
-//            throw new BaseException(BaseResponseStatus.POST_DETAIL_EMPTY);
-//        }
-        ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
-        if (productEntity == null) {
-            productEntity = ProductEntity.builder()
-                    .productId(product.getProductId())
-                    .productUrl(product.getProductUrl())
-                    .name(product.getName())
-                    .brand(product.getBrand())
-                    .date(product.getCpu())
-                    .cpurate(product.getCpurate())
-                    .core(product.getCore())
-                    .size(product.getSize())
-                    .ram(product.getRam())
-                    .weight(product.getWeight())
-                    .type(product.getType())
-                    .innermemory(product.getInnermemory())
-                    .communication(product.getCommunication())
-                    .os(product.getOs())
-                    .ssd(product.getSsd())
-                    .hdd(product.getHdd())
-                    .output(product.getOutput())
-                    .terminal(product.getTerminal())
-                    .build();
-            this.productRepository.save(productEntity);
-        }
-        UserProductEntity like = UserProductEntity.builder()
-                .userEntity(this.userRepository.findByEmail(principal.getName()).get())
-                .productEntity(productEntity)
-                .build();
-        this.userProductRepository.save(like);
     }
 
     public ProductDTO.GetDetail getProductDetailList(String productIdx) throws BaseException{
