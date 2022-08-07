@@ -3,6 +3,7 @@ package com.example.getIt.product.service;
 
 import com.example.getIt.config.Signatures;
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.DTO.SpecDTO;
 import com.example.getIt.product.entity.ProductEntity;
 import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.product.entity.UserProductEntity;
@@ -15,7 +16,7 @@ import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
 import com.example.getIt.util.NaverSearchAPI;
-import com.nimbusds.jose.shaded.json.parser.JSONParser;
+import com.example.getIt.util.NaverShopSearch;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
@@ -30,7 +31,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -41,6 +45,7 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
+    private static NaverShopSearch naverShopSearch;
     private ProductRepository productRepository;
     private WebsiteRepository websiteRepository;
     private UserRepository userRepository;
@@ -55,7 +60,7 @@ public class ProductService {
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
                           @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
-                          @Value("${recommend.secretKey}") String recommend_secretKey) {
+                          @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.clientId = clientId;
@@ -65,10 +70,11 @@ public class ProductService {
         this.userProductRepository = userProductRepository;
 
         this.naverSearchAPI = new NaverSearchAPI(this.clientId, this.clientSecret);
-
+        this.naverShopSearch = new NaverShopSearch(this.clientId, this.clientSecret);
         this.recommend_customerId = recommend_customerId;
         this.recommend_accessKey = recommend_accessKey;
         this.recommend_secretKey = recommend_secretKey;
+        this.naverShopSearch = naverShopSearch;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
@@ -275,7 +281,7 @@ public class ProductService {
                    productDetail.setCpurate(content[j]);
                    DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")||productinfo[j].contains("셀러론")) {
+                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")||productinfo[j].contains("셀러론")||productinfo[j].contains("라이젠")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }
@@ -583,5 +589,10 @@ public class ProductService {
         }
 
         return null;
+    }
+
+    public static List<ProductDTO.GetSpecResultList> getPickedSpec(SpecDTO.FindSpec specdto) {
+        String resultString = naverShopSearch.specSearch(specdto.getType(), specdto.getPurpose(), specdto.getMaxexpense(), specdto.getMinexpense());
+        return naverShopSearch.fromJSONtoItemsSpec(resultString);
     }
 }
