@@ -1,4 +1,4 @@
-package com.example.getIt.user.jwt.util;
+package com.example.getIt.jwt.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;

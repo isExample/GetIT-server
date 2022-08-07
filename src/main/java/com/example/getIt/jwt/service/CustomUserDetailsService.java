@@ -1,4 +1,4 @@
-package com.example.getIt.user.jwt.service;
+package com.example.getIt.jwt.service;
 
 
 import com.example.getIt.user.entity.UserEntity;

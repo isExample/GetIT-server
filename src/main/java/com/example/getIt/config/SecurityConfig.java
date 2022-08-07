@@ -1,11 +1,11 @@
 package com.example.getIt.config;
 
-import com.example.getIt.user.jwt.OAuth2SuccessHandler;
-import com.example.getIt.user.jwt.exception.JwtAccessDeniedHandler;
-import com.example.getIt.user.jwt.exception.JwtAuthenticationEntryPoint;
-import com.example.getIt.user.jwt.config.JwtSecurityConfig;
-import com.example.getIt.user.jwt.TokenProvider;
-import com.example.getIt.user.jwt.service.CustomOAuth2UserService;
+import com.example.getIt.jwt.OAuth2SuccessHandler;
+import com.example.getIt.jwt.exception.JwtAccessDeniedHandler;
+import com.example.getIt.jwt.exception.JwtAuthenticationEntryPoint;
+import com.example.getIt.jwt.config.JwtSecurityConfig;
+import com.example.getIt.jwt.TokenProvider;
+import com.example.getIt.jwt.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

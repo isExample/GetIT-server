@@ -1,7 +1,7 @@
-package com.example.getIt.user.jwt.config;
+package com.example.getIt.jwt.config;
 
-import com.example.getIt.user.jwt.JwtFilter;
-import com.example.getIt.user.jwt.TokenProvider;
+import com.example.getIt.jwt.JwtFilter;
+import com.example.getIt.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

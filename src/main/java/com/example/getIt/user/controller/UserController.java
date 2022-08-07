@@ -1,14 +1,16 @@
 package com.example.getIt.user.controller;
 
 
-import com.example.getIt.user.jwt.DTO.TokenDTO;
+import com.example.getIt.jwt.DTO.TokenDTO;
 import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.user.service.UserService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
 import com.example.getIt.util.BaseResponseStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 
 @RestController
@@ -99,12 +101,15 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/profile")
-    public BaseResponse<String> patchProfile(Principal principal, @RequestBody UserDTO.UserProfile user){
+    public BaseResponse<String> patchProfile(Principal principal, @RequestPart(value = "user", required = false) UserDTO.UserProfile user,
+                                             @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         try {
-            this.userService.patchProfile(principal, user);
+            this.userService.patchProfile(principal, user, profileImg);
             return new BaseResponse<>("프로필 정보를 변경했습니다.");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
+        } catch (IOException e){
+            return new BaseResponse<>("IO Exception Error");
         }
     }
 }

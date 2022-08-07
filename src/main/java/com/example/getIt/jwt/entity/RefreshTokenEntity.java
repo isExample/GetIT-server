@@ -1,4 +1,4 @@
-package com.example.getIt.user.jwt.entity;
+package com.example.getIt.jwt.entity;
 
 import lombok.Builder;
 import lombok.Getter;

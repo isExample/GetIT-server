@@ -35,7 +35,8 @@ public enum BaseResponseStatus {
     /*
     * 7000 : PATCH
     * */
-    PASSWORD_EQUALS_NEWPASSWORD(false, 7000, "같은 비밀번호로는 새로운 비밀번호로 변경할 수 없습니다.");
+    PASSWORD_EQUALS_NEWPASSWORD(false, 7000, "같은 비밀번호로는 새로운 비밀번호로 변경할 수 없습니다."),
+    SAME_NICKNAME(false, 7001, "같은 닉네임 변경을 진행하고 있습니다.");
 
 
 
