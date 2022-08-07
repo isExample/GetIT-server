@@ -1,21 +1,20 @@
 package com.example.getIt.product.controller;
 
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.DTO.SpecDTO;
+import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/main")
 public class MainViewController {
     private ProductService productService;
+    private ProductRepository productRepository;
 
     public MainViewController(ProductService productService){
         this.productService = productService;
@@ -32,4 +31,11 @@ public class MainViewController {
         }
     }
 
+    @ResponseBody
+    @PostMapping("/findspec")
+    public BaseResponse<List<ProductDTO.GetSpecResultList>> getFindSpec(@RequestBody SpecDTO.FindSpec spec) {
+        List<ProductDTO.GetSpecResultList> getSpecResults = ProductService.getPickedSpec(spec);
+        return new BaseResponse<>(getSpecResults);
+
+    }
 }

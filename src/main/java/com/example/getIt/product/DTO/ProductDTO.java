@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
 
-import java.util.List;
-
 @NoArgsConstructor
 public class ProductDTO {
 
@@ -147,6 +145,24 @@ public class ProductDTO {
 
         public Recommend(JSONObject jsonObject) {
             this.relKeyword = jsonObject.getString("relKeyword");
+        }
+    }
+    @Getter
+    @NoArgsConstructor
+    public static class GetSpecResultList {
+        private String title;
+        private String link;
+        private String image;
+        private String lprice;
+        private String brand;
+
+
+        public GetSpecResultList(JSONObject itemJson) {
+            this.title = itemJson.getString("title");
+            this.link = itemJson.getString("link");
+            this.image = itemJson.getString("image");
+            this.lprice = itemJson.getString("lprice");
+            this.brand = itemJson.getString("maker");
         }
     }
 

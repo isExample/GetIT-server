@@ -41,7 +41,6 @@ public class NaverSearchAPI {
         JSONArray items = rjson.getJSONArray("items");
         return items;
     }
-
     public JSONObject itemInfo(String productId){
         return null;
     }
