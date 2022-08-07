@@ -150,7 +150,11 @@ public class UserService {
         try{
             UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
             List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
-            UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
+            Optional<UserEntity> userEntityOptional = userRepository.findByEmail(principal.getName());
+            if(userEntityOptional.isEmpty()){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+            UserEntity userEntity = userEntityOptional.get();
 
             return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),

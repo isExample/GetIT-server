@@ -36,7 +36,7 @@ public class UserController {
 
     }
 
-    //회원 조회
+    // 회원 조회
     // 후에 양방향 매핑할지, 코드를 유지할 지 정해야 할 것으로 보임!
     @ResponseBody
     @GetMapping("/mypage")
@@ -70,7 +70,9 @@ public class UserController {
         }
 
     }
-
+    /*
+     *pwd 변경
+     * */
     @ResponseBody
     @PatchMapping("/pwd")
     public BaseResponse<String> patchPwd(Principal principal, @RequestBody UserDTO.UserPwd user){
@@ -83,6 +85,9 @@ public class UserController {
 
     }
 
+    /*
+    * 좋아요 list
+    * */
     @ResponseBody
     @GetMapping("/mylike")
     public BaseResponse<UserDTO.UserLikeList> getUserLikeList(Principal principal){
@@ -94,11 +99,17 @@ public class UserController {
         }
     }
 
+    /*
+    * 토큰 재발급
+    * */
     @PostMapping("/reissue")
     public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto) { //RequestBody로 Access Token + Refresh Token를 받는다.
         return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto));
     }
 
+    /*
+    * 프로필 변경
+    * */
     @ResponseBody
     @PatchMapping("/profile")
     public BaseResponse<String> patchProfile(Principal principal, @RequestPart(value = "user", required = false) UserDTO.UserProfile user,
