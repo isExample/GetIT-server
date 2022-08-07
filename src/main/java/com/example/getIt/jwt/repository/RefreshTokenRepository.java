@@ -1,6 +1,6 @@
-package com.example.getIt.user.jwt.repository;
+package com.example.getIt.jwt.repository;
 
-import com.example.getIt.user.jwt.entity.RefreshTokenEntity;
+import com.example.getIt.jwt.entity.RefreshTokenEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

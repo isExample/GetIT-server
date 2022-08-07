@@ -5,7 +5,9 @@ import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.util.Role;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.List;
 
 @NoArgsConstructor
@@ -82,8 +84,8 @@ public class UserDTO {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class UserProfile {
         private String nickName;
-        private String profileImgUrl;
     }
 }

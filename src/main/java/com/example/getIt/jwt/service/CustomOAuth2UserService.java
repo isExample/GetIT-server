@@ -1,8 +1,8 @@
-package com.example.getIt.user.jwt.service;
+package com.example.getIt.jwt.service;
 
 import com.example.getIt.user.DTO.SessionUser;
 import com.example.getIt.user.entity.UserEntity;
-import com.example.getIt.user.jwt.DTO.OAuthAttributes;
+import com.example.getIt.jwt.DTO.OAuthAttributes;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;

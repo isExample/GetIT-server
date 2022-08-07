@@ -2,10 +2,10 @@ package com.example.getIt.user.service;
 
 import com.example.getIt.product.entity.ReviewEntity;
 import com.example.getIt.product.repository.ReviewRepository;
-import com.example.getIt.user.jwt.entity.RefreshTokenEntity;
-import com.example.getIt.user.jwt.repository.RefreshTokenRepository;
-import com.example.getIt.user.jwt.DTO.TokenDTO;
-import com.example.getIt.user.jwt.TokenProvider;
+import com.example.getIt.jwt.entity.RefreshTokenEntity;
+import com.example.getIt.jwt.repository.RefreshTokenRepository;
+import com.example.getIt.jwt.DTO.TokenDTO;
+import com.example.getIt.jwt.TokenProvider;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.product.entity.ProductEntity;
@@ -20,7 +20,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +41,14 @@ public class UserService {
     private RefreshTokenRepository refreshTokenRepository;
     private AuthenticationManagerBuilder authenticationManagerBuilder;
     private ReviewRepository reviewRepository;
-
+    private S3Uploader s3Uploader;
 
 
     public UserService(UserRepository userRepository, UserProductRepository userProductRepository,
                        ProductRepository productRepository, PasswordEncoder passwordEncoder,
                        TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
-                       ReviewRepository reviewRepository){
+                       ReviewRepository reviewRepository, S3Uploader s3Uploader){
         this.userRepository = userRepository;
         this.userProductRepository = userProductRepository;
         this.productRepository = productRepository;
@@ -55,6 +57,7 @@ public class UserService {
         this.refreshTokenRepository = refreshTokenRepository;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.reviewRepository = reviewRepository;
+        this.s3Uploader = s3Uploader;
     }
 
     public TokenDTO signIn(UserDTO.User user) throws BaseException {
@@ -290,11 +293,20 @@ public class UserService {
         }
     }
 
-    public void patchProfile(Principal principal, UserDTO.UserProfile user) throws BaseException{
+    public void patchProfile(Principal principal, UserDTO.UserProfile user, MultipartFile profileImg) throws BaseException, IOException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isPresent()){
             UserEntity userEntity = optional.get();
-            userEntity.changeProfile(user.getNickName(), user.getProfileImgUrl());
+            if(user.getNickName().equals(userEntity.getNickname())){
+                throw new BaseException(BaseResponseStatus.SAME_NICKNAME);
+            }
+            if(!profileImg.isEmpty()){
+                String userProfileUrl = s3Uploader.upload(profileImg, "profile");
+                userEntity.changeProfileImgUrl(userProfileUrl);
+            }
+            if(user.getNickName()!=null){
+                userEntity.changeNickName(user.getNickName());
+            }
             userRepository.save(userEntity);
         }else{
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);

@@ -1,6 +1,6 @@
-package com.example.getIt.user.jwt;
+package com.example.getIt.jwt;
 
-import com.example.getIt.user.jwt.DTO.TokenDTO;
+import com.example.getIt.jwt.DTO.TokenDTO;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

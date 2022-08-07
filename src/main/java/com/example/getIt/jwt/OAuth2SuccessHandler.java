@@ -1,12 +1,10 @@
-package com.example.getIt.user.jwt;
+package com.example.getIt.jwt;
 
 import com.example.getIt.user.entity.UserEntity;
-import com.example.getIt.user.jwt.DTO.OAuthAttributes;
-import com.example.getIt.user.jwt.DTO.TokenDTO;
-import com.example.getIt.user.jwt.entity.RefreshTokenEntity;
-import com.example.getIt.user.jwt.repository.RefreshTokenRepository;
+import com.example.getIt.jwt.DTO.TokenDTO;
+import com.example.getIt.jwt.entity.RefreshTokenEntity;
+import com.example.getIt.jwt.repository.RefreshTokenRepository;
 import com.example.getIt.user.repository.UserRepository;
-import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
 import com.example.getIt.util.BaseResponseStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;

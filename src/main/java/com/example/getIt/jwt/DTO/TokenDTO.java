@@ -1,4 +1,4 @@
-package com.example.getIt.user.jwt.DTO;
+package com.example.getIt.jwt.DTO;
 
 
 import lombok.*;
