@@ -34,17 +34,17 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
          * 토큰이 만료된 경우 예외처리
          */
         if(exception.equals("ExpiredJwtException")) {
-            status = BaseResponseStatus.WRONG_JWT_SIGN_TOKEN;
+            status = BaseResponseStatus.EXPIRED_JWT_TOKEN;
             setResponse(response, status);
             return;
         }
         if(exception.equals("MalformedJwtException")) {
-            status = BaseResponseStatus.EXPIRED_JWT_TOKEN;
+            status = BaseResponseStatus.WRONG_JWT_SIGN_TOKEN;
             setResponse(response, status);
             return;
         }
         if(exception.equals("UnsupportedJwtException")) {
-            status = BaseResponseStatus.EXPIRED_JWT_TOKEN;
+            status = BaseResponseStatus.UNSUPPORTED_JWT_TOKEN;
             setResponse(response, status);
             return;
         }
