@@ -42,8 +42,17 @@ public enum BaseResponseStatus {
     /*
      * 8000 : delete
      * */
-    UNEXIST_REVIEW(false, 8001, "존재하지 않는 리뷰 번호입니다.");
+    UNEXIST_REVIEW(false, 8001, "존재하지 않는 리뷰 번호입니다."),
 
+    /*
+    * 9500 : jwt
+    * */
+
+    WRONG_JWT_SIGN_TOKEN(false, 9500, "잘못된 JWT 서명입니다."),
+    EXPIRED_JWT_TOKEN(false, 9501, "만료된 JWT 토큰 입니다."),
+    UNSUPPORTED_JWT_TOKEN(false, 9502, "지원되지 않는 JWT 토큰입니다."),
+    WRONG_JWT_TOKEN(false, 9503, "JWT 토큰이 잘못되었습니다."),
+    NULL_JWT(false,9504, "JWT의 값이 없습니다.");
 
 
     private final boolean isSuccess;
