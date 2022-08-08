@@ -38,7 +38,11 @@ public enum BaseResponseStatus {
     * */
     PASSWORD_EQUALS_NEWPASSWORD(false, 7000, "같은 비밀번호로는 새로운 비밀번호로 변경할 수 없습니다."),
     SAME_NICKNAME(false, 7001, "같은 닉네임 변경을 진행하고 있습니다."),
-    PATCH_PROFILE_IMG_ERROR(false, 7002, "프로필 이미지 에러입니다.");
+    PATCH_PROFILE_IMG_ERROR(false, 7002, "프로필 이미지 에러입니다."),
+    /*
+     * 8000 : delete
+     * */
+    UNEXIST_REVIEW(false, 8001, "존재하지 않는 리뷰 번호입니다.");
 
 
 
