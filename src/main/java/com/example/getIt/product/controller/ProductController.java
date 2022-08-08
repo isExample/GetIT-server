@@ -142,4 +142,14 @@ public class ProductController {
         }
     }
 
+    @ResponseBody
+    @DeleteMapping("/delete/{reviewIdx}")
+    public BaseResponse<String> deleteReview(@PathVariable("reviewIdx") Long reviewIdx){
+        try{
+            productService.deleteReview(reviewIdx);
+            return new BaseResponse<>("리뷰를 삭제했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

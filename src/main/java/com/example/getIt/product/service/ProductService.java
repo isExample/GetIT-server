@@ -615,4 +615,18 @@ public class ProductService {
         String resultString = naverShopSearch.specSearch(specdto.getType(), specdto.getPurpose(), specdto.getMaxexpense(), specdto.getMinexpense());
         return naverShopSearch.fromJSONtoItemsSpec(resultString);
     }
+
+    public void deleteReview(Long reviewIdx) throws BaseException {
+        ReviewEntity reviewEntity = reviewRepository.findByReviewIdx(reviewIdx);
+        if(reviewEntity != null) {
+            if(reviewEntity.getReviewImgUrl() != null) {
+//                String fileName = reviewEntity.getReviewImgUrl();
+//                s3Uploader.delete(fileName);
+            }
+            reviewRepository.deleteById(reviewIdx);
+        }
+        else{
+            throw new BaseException(BaseResponseStatus.UNEXIST_REVIEW);
+        }
+    }
 }
