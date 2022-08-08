@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -87,18 +88,22 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, ServletRequest request) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT 서명입니다.");
+            request.setAttribute("exception", "MalformedJwtException");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
+            request.setAttribute("exception", "ExpiredJwtException");
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
+            request.setAttribute("exception", "UnsupportedJwtException");
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
+            request.setAttribute("exception", "IllegalArgumentException");
         }
         return false;
     }

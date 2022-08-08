@@ -10,6 +10,7 @@ import com.example.getIt.util.BaseResponseStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -100,11 +101,11 @@ public class UserController {
     }
 
     /*
-    * 토큰 재발급
-    * */
+     * 토큰 재발급
+     * */
     @PostMapping("/reissue")
-    public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto) { //RequestBody로 Access Token + Refresh Token를 받는다.
-        return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto));
+    public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto, HttpServletRequest request) { //RequestBody로 Access Token + Refresh Token를 받는다.
+        return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto, request));
     }
 
     /*
