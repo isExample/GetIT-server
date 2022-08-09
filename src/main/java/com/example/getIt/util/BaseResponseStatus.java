@@ -43,6 +43,10 @@ public enum BaseResponseStatus {
      * 8000 : delete
      * */
     UNEXIST_REVIEW(false, 8001, "존재하지 않는 리뷰 번호입니다."),
+    DELETE_USERPRODUCT_ERROR(false, 8010, "회원과 관련된 user_product를 삭제하는 도중 에러가 발생했습니다."),
+    DELETE_REVIEW_ERROR(false, 8011, "회원과 관련된 review를 삭제하는 도중 에러가 발생했습니다."),
+    DELETE_REFRESHTOKEN_ERROR(false, 8012, "회원과 관련된 refresh_token을 삭제하는 도중 에러가 발생했습니다."),
+    DELETE_USER_ERROR(false, 8013, "회원 정보를 삭제하는 도중 에러가 발생했습니다."),
 
     /*
     * 9500 : jwt
