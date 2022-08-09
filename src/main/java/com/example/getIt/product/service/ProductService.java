@@ -616,13 +616,23 @@ public class ProductService {
         return naverShopSearch.fromJSONtoItemsSpec(resultString);
     }
 
-    public void deleteReview(Long reviewIdx) throws BaseException {
+    public void deleteReview(Principal principal, Long reviewIdx) throws BaseException {
         ReviewEntity reviewEntity = reviewRepository.findByReviewIdx(reviewIdx);
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+
         if(reviewEntity != null) {
             if(reviewEntity.getReviewImgUrl() != null) {
 //                String fileName = reviewEntity.getReviewImgUrl();
 //                s3Uploader.delete(fileName);
             }
+
+            if(optional.isPresent()) {
+                UserEntity userEntity = optional.get();
+                userEntity.getReviews().remove(reviewEntity);
+            } else{
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+
             reviewRepository.deleteById(reviewIdx);
         }
         else{
