@@ -621,19 +621,22 @@ public class ProductService {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
 
         if(reviewEntity != null) {
-            if(reviewEntity.getReviewImgUrl() != null) {
-//                String fileName = reviewEntity.getReviewImgUrl();
-//                s3Uploader.delete(fileName);
-            }
-
             if(optional.isPresent()) {
                 UserEntity userEntity = optional.get();
-                userEntity.getReviews().remove(reviewEntity);
+                if(userEntity.getUserIdx().equals(reviewEntity.getUserIdx().getUserIdx())){
+                    userEntity.getReviews().remove(reviewEntity);
+                    reviewRepository.deleteById(reviewIdx);
+                }
+                else{
+                    throw new BaseException(BaseResponseStatus.INCORRECT_USER);
+                }
             } else{
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
-
-            reviewRepository.deleteById(reviewIdx);
+//            if(reviewEntity.getReviewImgUrl() != null) {
+//                String fileName = reviewEntity.getReviewImgUrl();
+//                s3Uploader.delete(fileName);
+//            }
         }
         else{
             throw new BaseException(BaseResponseStatus.UNEXIST_REVIEW);
