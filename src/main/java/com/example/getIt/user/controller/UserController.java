@@ -2,6 +2,7 @@ package com.example.getIt.user.controller;
 
 
 import com.example.getIt.jwt.DTO.TokenDTO;
+import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.user.DTO.UserDTO;
 import com.example.getIt.user.service.UserService;
 import com.example.getIt.util.BaseException;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
@@ -129,6 +131,17 @@ public class UserController {
         try{
             userService.deleteUserData(principal);
             return new BaseResponse<>("유저에 대한 정보를 모두 삭제했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/review")
+    public BaseResponse<List<UserDTO.UserReviewList>> getReview(Principal principal){
+        try{
+            List<UserDTO.UserReviewList> getReviewList = userService.getUserReviewList(principal);
+            return new BaseResponse<>(getReviewList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
