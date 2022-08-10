@@ -76,6 +76,7 @@ public class UserDTO {
     @NoArgsConstructor
     public static class UserReviewList{
         private Long userIdx;
+        private Long reviewIdx;
         private String review;
         private String reviewImgUrl;
         private ProductDTO.GetProduct reviewList;

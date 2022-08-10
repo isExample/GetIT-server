@@ -268,7 +268,7 @@ public class UserService {
         }
     }
 
-    private List<UserDTO.UserReviewList> getUserReviewList(Principal principal) throws BaseException {
+    public List<UserDTO.UserReviewList> getUserReviewList(Principal principal) throws BaseException {
         try{
             UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
             List<ReviewEntity> products = reviewRepository.findAllByUserIdx(userEntity);
@@ -278,6 +278,7 @@ public class UserService {
                 ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
                 UserDTO.UserReviewList review = new UserDTO.UserReviewList();
                 review.setUserIdx(temp.getUserIdx().getUserIdx());
+                review.setReviewIdx(temp.getReviewIdx());
                 review.setReview(temp.getReview());
                 review.setReviewImgUrl(temp.getReviewImgUrl());
                 review.setReviewList(new ProductDTO.GetProduct(
