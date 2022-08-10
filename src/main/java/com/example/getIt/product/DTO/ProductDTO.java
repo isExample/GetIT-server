@@ -130,6 +130,8 @@ public class ProductDTO {
     @AllArgsConstructor
     @NoArgsConstructor
     public static class ReviewList{
+        private Long reviewIdx;
+        private Long productIdx;
         private String nickName;
         private String review;
         private String reviewImgUrl;

@@ -503,6 +503,8 @@ public class ProductService {
 
             for(ReviewEntity i : reviewEntity){
                 ProductDTO.ReviewList review = new ProductDTO.ReviewList();
+                review.setReviewIdx(i.getReviewIdx());
+                review.setProductIdx(i.getProductIdx().getProductIdx());
                 review.setNickName(i.getUserIdx().getNickname());
                 review.setReview(i.getReview());
                 review.setReviewImgUrl(i.getReviewImgUrl());
