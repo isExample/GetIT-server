@@ -322,4 +322,48 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
     }
+
+    public void deleteUserData(Principal principal) throws BaseException {
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isPresent()) {
+            UserEntity userEntity = optional.get();
+            String email = userEntity.getEmail();
+
+            try{
+                List<UserProductEntity> userProductEntityList = userProductRepository.findAllByUserIdx(userEntity);
+                for (UserProductEntity i : userProductEntityList){
+                    userProductRepository.delete(i);
+                }
+            } catch (Exception e) {
+                throw new BaseException(BaseResponseStatus.DELETE_USERPRODUCT_ERROR);
+            }
+
+            try{
+                List<ReviewEntity> reviewEntityList = reviewRepository.findAllByUserIdx(userEntity);
+                for (ReviewEntity i : reviewEntityList){
+                    userEntity.getReviews().remove(i);
+                    reviewRepository.delete(i);
+                }
+            } catch (Exception e) {
+                throw new BaseException(BaseResponseStatus.DELETE_REVIEW_ERROR);
+            }
+
+            try{
+                Optional<RefreshTokenEntity> op = refreshTokenRepository.findByKeyId(email);
+                RefreshTokenEntity refreshTokenEntity = op.get();
+                refreshTokenRepository.delete(refreshTokenEntity);
+            } catch (Exception e) {
+                throw new BaseException(BaseResponseStatus.DELETE_REFRESHTOKEN_ERROR);
+            }
+
+            try{
+                userRepository.deleteById(userEntity.getUserIdx());
+            } catch (Exception e) {
+                throw new BaseException(BaseResponseStatus.DELETE_USER_ERROR);
+            }
+
+        } else{
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+    }
 }

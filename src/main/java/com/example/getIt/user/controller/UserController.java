@@ -122,4 +122,15 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @ResponseBody
+    @DeleteMapping("/withdrawl")
+    public BaseResponse<String> deleteUser(Principal principal){
+        try{
+            userService.deleteUserData(principal);
+            return new BaseResponse<>("유저에 대한 정보를 모두 삭제했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }
