@@ -6,11 +6,9 @@ import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.DTO.SpecDTO;
 import com.example.getIt.product.entity.ProductEntity;
 import com.example.getIt.product.entity.ReviewEntity;
+import com.example.getIt.product.entity.SpecEntity;
 import com.example.getIt.product.entity.UserProductEntity;
-import com.example.getIt.product.repository.ProductRepository;
-import com.example.getIt.product.repository.ReviewRepository;
-import com.example.getIt.product.repository.UserProductRepository;
-import com.example.getIt.product.repository.WebsiteRepository;
+import com.example.getIt.product.repository.*;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.*;
@@ -20,7 +18,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +46,7 @@ public class ProductService {
     private ProductRepository productRepository;
     private WebsiteRepository websiteRepository;
     private UserRepository userRepository;
+    private static SpecRepository specRepository;
     private String clientId;
     private String clientSecret;
     private ReviewRepository reviewRepository;
@@ -58,12 +58,13 @@ public class ProductService {
     private S3Uploader s3Uploader;
 
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
-                          ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
+                          SpecRepository specRepository, ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
                           @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
                           @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch,
                           S3Uploader s3Uploader) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
+        this.specRepository = specRepository;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
         this.userRepository = userRepository;
@@ -613,9 +614,35 @@ public class ProductService {
         return null;
     }
 
-    public static List<ProductDTO.GetSpecResultList> getPickedSpec(SpecDTO.FindSpec specdto) {
-        String resultString = naverShopSearch.specSearch(specdto.getType(), specdto.getPurpose(), specdto.getMaxexpense(), specdto.getMinexpense());
-        return naverShopSearch.fromJSONtoItemsSpec(resultString);
+    public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
+        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndJob(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getJob());
+        List<SpecDTO.GetSpec> specList = new ArrayList<>();
+
+        for(SpecEntity i : specEntity){
+            SpecDTO.GetSpec spec = new SpecDTO.GetSpec();
+            spec.setProductId(i.getProductId());
+            spec.setProductImg(i.getProductImg());
+            spec.setBrand(i.getBrand());
+            spec.setProductName(i.getProductName());
+            spec.setPrice(i.getPrice());
+            specList.add(spec);
+        }
+        return specList;
+    }
+    public SpecEntity specsave(SpecDTO.FindSpec spec){
+        SpecEntity specEntity = SpecEntity.builder()
+                .type(spec.getType())
+                .foruse(spec.getForuse())
+                .forprice(spec.getForprice())
+                .job(spec.getJob())
+                .productImg(spec.getProductImg())
+                .productName(spec.getProductName())
+                .brand(spec.getBrand())
+                .price(spec.getPrice())
+                .productId(spec.getProductId())
+                .build();
+        specRepository.save(specEntity);
+        return specEntity;
     }
 
     public void deleteReview(Principal principal, Long reviewIdx) throws BaseException {

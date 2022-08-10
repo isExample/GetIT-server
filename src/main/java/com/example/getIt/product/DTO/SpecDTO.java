@@ -11,28 +11,28 @@ public class SpecDTO {
     @NoArgsConstructor
     @Builder
     public static class FindSpec {
-        private String type; // 기기 종류
-        private String purpose; // 용도
-        private String Minexpense; // 최소경비
-        private String Maxexpense; //최대경비
-        private String job; // 직업
-
-        public String getType() {
-            return type;
-        }
-
-        public String getPurpose() {
-            return purpose;
-        }
-
-        public String getMinexpense() {
-            return Minexpense;
-        }
-        public String getMaxexpense() {
-            return Maxexpense;
-        }
-        public String getJob() {
-            return job;
-        }
+        private String type;
+        private String foruse;
+        private String forprice;
+        private String job;
+        private String productImg;
+        private String productName;
+        private String brand;
+        private String productId;
+        private String price;
     }
-}
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class GetSpec {
+        private String productImg;
+        private String productName;
+        private String brand;
+        private String productId;
+        private String price;
+    }
+    }
+
