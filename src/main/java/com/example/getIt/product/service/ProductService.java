@@ -4,10 +4,7 @@ package com.example.getIt.product.service;
 import com.example.getIt.config.Signatures;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.DTO.SpecDTO;
-import com.example.getIt.product.entity.ProductEntity;
-import com.example.getIt.product.entity.ReviewEntity;
-import com.example.getIt.product.entity.SpecEntity;
-import com.example.getIt.product.entity.UserProductEntity;
+import com.example.getIt.product.entity.*;
 import com.example.getIt.product.repository.*;
 import com.example.getIt.user.entity.UserEntity;
 import com.example.getIt.user.repository.UserRepository;
@@ -42,7 +39,6 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
-    private static NaverShopSearch naverShopSearch;
     private ProductRepository productRepository;
     private WebsiteRepository websiteRepository;
     private UserRepository userRepository;
@@ -56,12 +52,13 @@ public class ProductService {
     private String recommend_secretKey;
     private String recommend_customerId;
     private S3Uploader s3Uploader;
+    private SearchRepository searchRepository;
 
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           SpecRepository specRepository, ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
                           @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
-                          @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch,
-                          S3Uploader s3Uploader) {
+                          @Value("${recommend.secretKey}") String recommend_secretKey,
+                          S3Uploader s3Uploader, SearchRepository searchRepository) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.specRepository = specRepository;
@@ -70,13 +67,12 @@ public class ProductService {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userProductRepository = userProductRepository;
-
+        this.searchRepository = searchRepository;
         this.naverSearchAPI = new NaverSearchAPI(this.clientId, this.clientSecret);
-        this.naverShopSearch = new NaverShopSearch(this.clientId, this.clientSecret);
+//        this.naverShopSearch = naverShopSearch;
         this.recommend_customerId = recommend_customerId;
         this.recommend_accessKey = recommend_accessKey;
         this.recommend_secretKey = recommend_secretKey;
-        this.naverShopSearch = naverShopSearch;
         this.s3Uploader = s3Uploader;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
@@ -542,76 +538,20 @@ public class ProductService {
         }
     }
 
-    public List<ProductDTO.Recommend> recommend(String keyWord) throws BaseException {
-        if(keyWord == null){
-            keyWord = "노트북";
+    public List<ProductDTO.Recommend> recommend() throws BaseException {
+        List<SearchEntity> searchEntities = this.searchRepository.findByOrderByCountSearchDesc();
+        List<ProductDTO.Recommend> recommends = new ArrayList<>();
+
+        if(searchEntities.size()<9){
+            for(int i = 0; i<searchEntities.size(); i++){
+                recommends.add(new ProductDTO.Recommend(searchEntities.get(i).getKeyword()));
+            }
+        }else{
+            for(int i = 0 ; i<10; i++){
+                recommends.add(new ProductDTO.Recommend(searchEntities.get(i).getKeyword()));
+            }
         }
-        String baseUrl = "https://api.naver.com";
-        String path = "/keywordstool";
-        String accessKey = this.recommend_accessKey; // 액세스키
-        String secretKey = this.recommend_secretKey;  // 시크릿키
-        String customerId = this.recommend_customerId;  // ID
-        String parameter = "hintKeywords=";
-        long timeStamp = System.currentTimeMillis();
-        URL url = null;
-        String times = String.valueOf(timeStamp);
-
-        try {
-            keyWord = URLEncoder.encode(keyWord, "UTF-8");
-            System.out.println("keyword : "+keyWord);
-        } catch (Exception e) {
-            throw new RuntimeException("인코딩 실패.");
-        }
-
-        try {
-            url = new URL(baseUrl+path+"?"+parameter+keyWord);
-            System.out.println("url : "+url);
-            String signature = Signatures.of(times,  "GET", path, secretKey);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-            con.setRequestMethod("GET");
-            con.setRequestProperty("X-Timestamp", times);
-            con.setRequestProperty("X-API-KEY", accessKey);
-            con.setRequestProperty("X-Customer", customerId);
-            con.setRequestProperty("X-Signature", signature);
-            con.setDoOutput(true);
-
-            int responseCode = con.getResponseCode();
-            BufferedReader br;
-            System.out.println("responseCode : "+responseCode);
-            if(responseCode == 200) {
-                br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
-            }
-            else {
-                br = new BufferedReader(new InputStreamReader(con.getErrorStream(), "UTF-8"));
-            }
-
-            String inputLine;
-            StringBuffer response = new StringBuffer();
-            JSONObject responseJson=null;
-            ProductDTO.Recommend recommend = new ProductDTO.Recommend();
-            while((inputLine = br.readLine()) != null) {
-                response.append(inputLine);
-            }
-            br.close();
-            System.out.println(response.toString());
-            responseJson = new JSONObject(response.toString());
-            JSONArray items = responseJson.getJSONArray("keywordList");
-            List<ProductDTO.Recommend> recommends = new ArrayList<>();
-
-            int i = items.length();
-            if(i>10) i = 10;
-            for (int j = 0; j < i; j++) {
-                JSONObject eachItem = (JSONObject) items.get(j);
-                ProductDTO.Recommend product = new ProductDTO.Recommend(eachItem);
-                recommends.add(product);
-            }
-            return recommends;
-        } catch (Exception e) {
-            System.out.println("Wrong URL.");
-        }
-
-        return null;
+        return recommends;
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {

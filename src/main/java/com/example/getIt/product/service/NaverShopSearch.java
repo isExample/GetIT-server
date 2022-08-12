@@ -1,30 +1,43 @@
-package com.example.getIt.util;
+package com.example.getIt.product.service;
 
 import com.example.getIt.product.DTO.ItemDTO;
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.entity.SearchEntity;
+import com.example.getIt.product.repository.SearchRepository;
+import com.example.getIt.util.BaseException;
+import com.example.getIt.util.BaseResponseStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
+//@Component
 public class NaverShopSearch {
-    private static String clientId;
-    private static String clientSecret;
-    public NaverShopSearch(){}
-    public NaverShopSearch(String clientId, String clientSecret){
+    private String clientId;
+    private String clientSecret;
+    private SearchRepository searchRepository;
+
+    public NaverShopSearch(@Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret, SearchRepository searchRepository){
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+        this.searchRepository = searchRepository;
     }
-    public static String search(String query) {
+    public String search(String query)  throws BaseException {
+        if(query.equals(null)){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
+        }
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Naver-Client-Id", clientId);
-        headers.add("X-Naver-Client-Secret", clientSecret);
+        headers.add("X-Naver-Client-Id", this.clientId);
+        headers.add("X-Naver-Client-Secret", this.clientSecret);
         String body = "";
 
         HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
@@ -36,9 +49,21 @@ public class NaverShopSearch {
         System.out.println("Response status: " + status);
         System.out.println(response);
 
+        SearchEntity search = searchRepository.findByKeyword(query);
+        if(search == null){
+            search = SearchEntity.builder()
+                    .keyword(query)
+                    .countSearch(1)
+                    .build();
+            this.searchRepository.save(search);
+
+        }else{
+            search.addSearch();
+            this.searchRepository.save(search);
+        }
         return response;
     }
-    public static String specSearch(String type, String use, String maxexpense, String minexpense) {
+    public String specSearch(String type, String use, String maxexpense, String minexpense) {
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Naver-Client-Id", clientId);
