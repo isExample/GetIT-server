@@ -154,6 +154,9 @@ public class ProductService {
     }
 
     public void postReview(Principal principal, ProductDTO.GetProductReview product, MultipartFile reviewImg) throws BaseException {
+        if(principal.equals(null)){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if (optional.isEmpty()) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
@@ -542,7 +545,7 @@ public class ProductService {
         List<SearchEntity> searchEntities = this.searchRepository.findByOrderByCountSearchDesc();
         List<ProductDTO.Recommend> recommends = new ArrayList<>();
 
-        if(searchEntities.size()<9){
+        if(searchEntities.size()<10){
             for(int i = 0; i<searchEntities.size(); i++){
                 recommends.add(new ProductDTO.Recommend(searchEntities.get(i).getKeyword()));
             }
@@ -586,6 +589,9 @@ public class ProductService {
     }
 
     public void deleteReview(Principal principal, Long reviewIdx) throws BaseException {
+        if(principal.equals(null)){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
         ReviewEntity reviewEntity = reviewRepository.findByReviewIdx(reviewIdx);
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
 
