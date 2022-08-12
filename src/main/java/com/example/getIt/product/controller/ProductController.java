@@ -1,6 +1,7 @@
 package com.example.getIt.product.controller;
 
 import com.example.getIt.product.DTO.ProductDTO;
+import com.example.getIt.product.entity.SearchEntity;
 import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
@@ -111,10 +112,9 @@ public class ProductController {
 
     @ResponseBody
     @GetMapping("/recommend")
-    public BaseResponse<List<ProductDTO.Recommend>> recommend(@RequestParam(required = false) String keyword){
+    public BaseResponse<List<ProductDTO.Recommend>> recommend(){
         try {
-            List<ProductDTO.Recommend> a = productService.recommend(keyword);
-            return new BaseResponse<>(a);
+            return new BaseResponse<>(productService.recommend());
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

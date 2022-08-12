@@ -143,11 +143,8 @@ public class ProductDTO {
     @NoArgsConstructor
     @Data
     public static class Recommend{
-        private String relKeyword;
+        private String keyword;
 
-        public Recommend(JSONObject jsonObject) {
-            this.relKeyword = jsonObject.getString("relKeyword");
-        }
     }
     @Getter
     @NoArgsConstructor
