@@ -42,7 +42,7 @@ import java.util.Optional;
 
 @Service
 public class ProductService {
-    private static NaverShopSearch naverShopSearch;
+//    private static NaverShopSearch naverShopSearch;
     private ProductRepository productRepository;
     private WebsiteRepository websiteRepository;
     private UserRepository userRepository;
@@ -56,12 +56,13 @@ public class ProductService {
     private String recommend_secretKey;
     private String recommend_customerId;
     private S3Uploader s3Uploader;
+    private SearchRepository searchRepository;
 
     public ProductService(ProductRepository productRepository, WebsiteRepository websiteRepository, UserRepository userRepository,
                           SpecRepository specRepository, ReviewRepository reviewRepository, UserProductRepository userProductRepository, @Value("${clientId}") String clientId, @Value("${clientSecret}") String clientSecret,
                           @Value("${recommend.customerId}") String recommend_customerId, @Value("${recommend.accessKey}") String recommend_accessKey,
-                          @Value("${recommend.secretKey}") String recommend_secretKey, NaverShopSearch naverShopSearch,
-                          S3Uploader s3Uploader) {
+                          @Value("${recommend.secretKey}") String recommend_secretKey,
+                          S3Uploader s3Uploader, SearchRepository searchRepository) {
         this.productRepository = productRepository;
         this.websiteRepository = websiteRepository;
         this.specRepository = specRepository;
@@ -70,13 +71,12 @@ public class ProductService {
         this.userRepository = userRepository;
         this.reviewRepository = reviewRepository;
         this.userProductRepository = userProductRepository;
-
+        this.searchRepository = searchRepository;
         this.naverSearchAPI = new NaverSearchAPI(this.clientId, this.clientSecret);
-        this.naverShopSearch = new NaverShopSearch(this.clientId, this.clientSecret);
+//        this.naverShopSearch = naverShopSearch;
         this.recommend_customerId = recommend_customerId;
         this.recommend_accessKey = recommend_accessKey;
         this.recommend_secretKey = recommend_secretKey;
-        this.naverShopSearch = naverShopSearch;
         this.s3Uploader = s3Uploader;
     }
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
