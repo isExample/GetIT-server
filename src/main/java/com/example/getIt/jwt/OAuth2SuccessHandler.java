@@ -36,7 +36,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         log.info("Principal에서 꺼낸 OAuth2User = {}", oAuth2User);
         // 최초 로그인이라면 회원가입 처리를 한다.
         log.info("토큰 발행 시작");
-        TokenDTO token = tokenProvider.generateTokenDto(authentication);
+        TokenDTO token = tokenProvider.generateTokenDto(authentication, (String) oAuth2User.getAttributes().get("email"));
         log.info("{}", token);
         UserEntity user = this.userRepository.findByEmail((String) oAuth2User.getAttributes().get("email")).get();
         if(!user.getProvider().equals("Not_Social")){

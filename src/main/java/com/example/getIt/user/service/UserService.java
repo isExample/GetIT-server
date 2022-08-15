@@ -21,7 +21,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +116,7 @@ public class UserService {
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication, authentication.getName());
         // 4. RefreshToken 저장
         RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
                 .key(authentication.getName())
@@ -204,7 +203,7 @@ public class UserService {
         }
 
         // 5. 새로운 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication, authentication.getName());
 
         // 6. 저장소 정보 업데이트
         RefreshTokenEntity newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
