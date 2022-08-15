@@ -146,4 +146,15 @@ public class UserController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @ResponseBody
+    @GetMapping("/logout")
+    public BaseResponse<String> logout(Principal principal, HttpServletRequest request){
+        try{
+            userService.logout(principal, request);
+            return new BaseResponse<>("로그아웃 되었습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

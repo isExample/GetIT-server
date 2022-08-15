@@ -15,11 +15,13 @@ import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.getIt.util.ValidationRegex.isRegexEmail;
 import static com.example.getIt.util.ValidationRegex.isRegexPwd;
@@ -43,13 +46,15 @@ public class UserService {
     private AuthenticationManagerBuilder authenticationManagerBuilder;
     private ReviewRepository reviewRepository;
     private S3Uploader s3Uploader;
+    private RedisTemplate redisTemplate;
 
 
     public UserService(UserRepository userRepository, UserProductRepository userProductRepository,
                        ProductRepository productRepository, PasswordEncoder passwordEncoder,
                        TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
-                       ReviewRepository reviewRepository, S3Uploader s3Uploader){
+                       ReviewRepository reviewRepository, S3Uploader s3Uploader,
+                       RedisTemplate redisTemplate){
         this.userRepository = userRepository;
         this.userProductRepository = userProductRepository;
         this.productRepository = productRepository;
@@ -59,6 +64,7 @@ public class UserService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.reviewRepository = reviewRepository;
         this.s3Uploader = s3Uploader;
+        this.redisTemplate = redisTemplate;
     }
 
     public TokenDTO signIn(UserDTO.User user) throws BaseException {
@@ -118,6 +124,9 @@ public class UserService {
                 .value(tokenDto.getRefreshToken())
                 .build();
         refreshTokenRepository.save(refreshToken);
+//        redisTemplate.opsForValue()
+//                .set(authentication.getName(), tokenDto.getRefreshToken(),
+//                        1000 * 60 * 30, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
         return tokenDto;
     }
@@ -149,14 +158,13 @@ public class UserService {
 
     public UserDTO.UserProtected getUser(Principal principal) throws BaseException {
         try{
-            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
-            List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             Optional<UserEntity> userEntityOptional = userRepository.findByEmail(principal.getName());
             if(userEntityOptional.isEmpty()){
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
             UserEntity userEntity = userEntityOptional.get();
-
+            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
+            List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),
                     userEntity.getEmail(),
@@ -366,5 +374,22 @@ public class UserService {
         } else{
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
+    }
+
+    public void logout(Principal principal, HttpServletRequest request) throws BaseException{
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isEmpty()){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        String accessToken = request.getHeader("Authorization").substring(7);
+
+        Long expiration = tokenProvider.getExpiration(accessToken);
+
+        redisTemplate.opsForValue()
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+
+        UserEntity user = optional.get();
+        Optional<RefreshTokenEntity> byKeyId = this.refreshTokenRepository.findByKeyId(user.getEmail());
+        this.refreshTokenRepository.delete(byKeyId.get());
     }
 }
