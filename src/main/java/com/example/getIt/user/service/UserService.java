@@ -331,9 +331,10 @@ public class UserService {
         }
     }
 
-    public void deleteUserData(Principal principal) throws BaseException {
+    public void deleteUserData(Principal principal, HttpServletRequest request) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isPresent()) {
+            expiredToken(principal, request);
             UserEntity userEntity = optional.get();
             String email = userEntity.getEmail();
 
@@ -374,19 +375,18 @@ public class UserService {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
     }
-
+    private void expiredToken(Principal principal, HttpServletRequest request) throws BaseException{
+        String accessToken = request.getHeader("Authorization").substring(7);
+        Long expiration = tokenProvider.getExpiration(accessToken);
+        redisTemplate.opsForValue()
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+    }
     public void logout(Principal principal, HttpServletRequest request) throws BaseException{
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isEmpty()){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
-        String accessToken = request.getHeader("Authorization").substring(7);
-
-        Long expiration = tokenProvider.getExpiration(accessToken);
-
-        redisTemplate.opsForValue()
-                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
-
+        expiredToken(principal, request);
         UserEntity user = optional.get();
         Optional<RefreshTokenEntity> byKeyId = this.refreshTokenRepository.findByKeyId(user.getEmail());
         this.refreshTokenRepository.delete(byKeyId.get());
