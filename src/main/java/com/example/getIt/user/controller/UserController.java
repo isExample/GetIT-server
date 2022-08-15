@@ -127,9 +127,9 @@ public class UserController {
 
     @ResponseBody
     @DeleteMapping("/withdrawl")
-    public BaseResponse<String> deleteUser(Principal principal){
+    public BaseResponse<String> deleteUser(Principal principal, HttpServletRequest request){
         try{
-            userService.deleteUserData(principal);
+            userService.deleteUserData(principal, request);
             return new BaseResponse<>("유저에 대한 정보를 모두 삭제했습니다.");
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -142,6 +142,17 @@ public class UserController {
         try{
             List<UserDTO.UserReviewList> getReviewList = userService.getUserReviewList(principal);
             return new BaseResponse<>(getReviewList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/logout")
+    public BaseResponse<String> logout(Principal principal, HttpServletRequest request){
+        try{
+            userService.logout(principal, request);
+            return new BaseResponse<>("로그아웃 되었습니다.");
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

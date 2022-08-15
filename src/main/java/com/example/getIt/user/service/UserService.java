@@ -15,6 +15,7 @@ import com.example.getIt.product.repository.ProductRepository;
 import com.example.getIt.product.repository.UserProductRepository;
 import com.example.getIt.user.repository.UserRepository;
 import com.example.getIt.util.*;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -28,6 +29,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.getIt.util.ValidationRegex.isRegexEmail;
 import static com.example.getIt.util.ValidationRegex.isRegexPwd;
@@ -43,13 +45,15 @@ public class UserService {
     private AuthenticationManagerBuilder authenticationManagerBuilder;
     private ReviewRepository reviewRepository;
     private S3Uploader s3Uploader;
+    private RedisTemplate redisTemplate;
 
 
     public UserService(UserRepository userRepository, UserProductRepository userProductRepository,
                        ProductRepository productRepository, PasswordEncoder passwordEncoder,
                        TokenProvider tokenProvider, RefreshTokenRepository refreshTokenRepository,
                        AuthenticationManagerBuilder authenticationManagerBuilder,
-                       ReviewRepository reviewRepository, S3Uploader s3Uploader){
+                       ReviewRepository reviewRepository, S3Uploader s3Uploader,
+                       RedisTemplate redisTemplate){
         this.userRepository = userRepository;
         this.userProductRepository = userProductRepository;
         this.productRepository = productRepository;
@@ -59,6 +63,7 @@ public class UserService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.reviewRepository = reviewRepository;
         this.s3Uploader = s3Uploader;
+        this.redisTemplate = redisTemplate;
     }
 
     public TokenDTO signIn(UserDTO.User user) throws BaseException {
@@ -111,13 +116,16 @@ public class UserService {
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication, authentication.getName());
         // 4. RefreshToken 저장
         RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
                 .key(authentication.getName())
                 .value(tokenDto.getRefreshToken())
                 .build();
         refreshTokenRepository.save(refreshToken);
+//        redisTemplate.opsForValue()
+//                .set(authentication.getName(), tokenDto.getRefreshToken(),
+//                        1000 * 60 * 30, TimeUnit.MILLISECONDS);
         // 5. 토큰 발급
         return tokenDto;
     }
@@ -149,14 +157,13 @@ public class UserService {
 
     public UserDTO.UserProtected getUser(Principal principal) throws BaseException {
         try{
-            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
-            List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             Optional<UserEntity> userEntityOptional = userRepository.findByEmail(principal.getName());
             if(userEntityOptional.isEmpty()){
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
             UserEntity userEntity = userEntityOptional.get();
-
+            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
+            List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),
                     userEntity.getEmail(),
@@ -196,7 +203,7 @@ public class UserService {
         }
 
         // 5. 새로운 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication, authentication.getName());
 
         // 6. 저장소 정보 업데이트
         RefreshTokenEntity newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
@@ -324,9 +331,10 @@ public class UserService {
         }
     }
 
-    public void deleteUserData(Principal principal) throws BaseException {
+    public void deleteUserData(Principal principal, HttpServletRequest request) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isPresent()) {
+            expiredToken(principal, request);
             UserEntity userEntity = optional.get();
             String email = userEntity.getEmail();
 
@@ -366,5 +374,21 @@ public class UserService {
         } else{
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
+    }
+    private void expiredToken(Principal principal, HttpServletRequest request) throws BaseException{
+        String accessToken = request.getHeader("Authorization").substring(7);
+        Long expiration = tokenProvider.getExpiration(accessToken);
+        redisTemplate.opsForValue()
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+    }
+    public void logout(Principal principal, HttpServletRequest request) throws BaseException{
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isEmpty()){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+        expiredToken(principal, request);
+        UserEntity user = optional.get();
+        Optional<RefreshTokenEntity> byKeyId = this.refreshTokenRepository.findByKeyId(user.getEmail());
+        this.refreshTokenRepository.delete(byKeyId.get());
     }
 }
