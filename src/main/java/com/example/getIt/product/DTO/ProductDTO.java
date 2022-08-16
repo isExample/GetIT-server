@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
 
+import java.util.List;
+
 @NoArgsConstructor
 public class ProductDTO {
 
@@ -165,4 +167,17 @@ public class ProductDTO {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetProductItemList{
+        private List<GetProductList> products;
+    }
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    public static class GetRecommItemList{
+        private String topic;
+        private List<GetProductList> products;
+    }
 }

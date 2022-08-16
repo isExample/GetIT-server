@@ -26,9 +26,9 @@ public class MainViewController {
 
     @ResponseBody
     @GetMapping("/recommproducts")
-    public BaseResponse<List<ProductDTO.GetProductList>> getRecommProducts(@RequestParam String topic){
+    public BaseResponse<ProductDTO.GetRecommItemList> getRecommProducts(){
         try {
-            List<ProductDTO.GetProductList> getProducts = this.productService.getRecommProducts(topic);
+            ProductDTO.GetRecommItemList getProducts = this.productService.getRecommProducts();
             return new BaseResponse<>(getProducts);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

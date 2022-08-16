@@ -71,9 +71,9 @@ public class ProductController {
     }
     @ResponseBody
     @GetMapping("/category")
-    public BaseResponse<List<ProductDTO.GetProductList>> getCategory(@RequestBody ProductDTO.GetCategoryRes getCategoryRes){
+    public BaseResponse<ProductDTO.GetProductItemList> getCategory(@RequestBody ProductDTO.GetCategoryRes getCategoryRes){
         try {
-            List<ProductDTO.GetProductList> getProductList = productService.getCategoryList(getCategoryRes);
+            ProductDTO.GetProductItemList getProductList = productService.getCategoryList(getCategoryRes);
             return new BaseResponse<>(getProductList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

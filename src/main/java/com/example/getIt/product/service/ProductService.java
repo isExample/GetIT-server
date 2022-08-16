@@ -84,7 +84,7 @@ public class ProductService {
         return getProductDetailList(productIdx);
     }
 
-    public List<ProductDTO.GetProductList> getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
+    public ProductDTO.GetProductItemList getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
         try {
             String query = getCategoryRes.getType() + "," + getCategoryRes.getRequirement();
             query = query.replace(",null", "");
@@ -99,7 +99,8 @@ public class ProductService {
                     product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                     result.add(product);
                 }
-                return result;
+                ProductDTO.GetProductItemList products = new ProductDTO.GetProductItemList(result);
+                return products;
             }
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
@@ -516,11 +517,19 @@ public class ProductService {
         }
     }
 
-    public List<ProductDTO.GetProductList> getRecommProducts(String topic) throws BaseException{
+    public ProductDTO.GetRecommItemList getRecommProducts() throws BaseException{
         try {
+            List<String> topic = new ArrayList<>();
+            topic.add("최신 노트북");
+            topic.add("최신 핸드폰");
+            topic.add("최신 태블릿 PC");
+            topic.add("스피커");
+            topic.add("무선 이어폰");
+            topic.add("게이밍 PC");
             // Search
+            int number = (int) (Math.random()*6);
             this.naverSearchAPI.setDisplay(20);
-            JSONArray items = this.naverSearchAPI.itemsList(topic);
+            JSONArray items = this.naverSearchAPI.itemsList(topic.get(number));
             // Create Random Number(1~20)
             List<Integer> randomNum = new ArrayList<>();
             for(int i=1; i<20; i++){
@@ -528,14 +537,15 @@ public class ProductService {
             }
             Collections.shuffle(randomNum);
             // Get Random Product
-            List<ProductDTO.GetProductList> RecommProducts = new ArrayList<>();
+            List<ProductDTO.GetProductList> recommProducts = new ArrayList<>();
             for(int i=0; i<6; i++){
                 JSONObject eachItem = (JSONObject) items.get(randomNum.get(i));
                 ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
                 product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
-                RecommProducts.add(product);
+                recommProducts.add(product);
             }
-            return RecommProducts;
+            ProductDTO.GetRecommItemList products = new ProductDTO.GetRecommItemList(topic.get(number), recommProducts);
+            return products;
         } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_SEARCH);
         }
