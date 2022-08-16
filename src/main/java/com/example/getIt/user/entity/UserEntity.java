@@ -70,11 +70,6 @@ public class UserEntity extends BaseEntity {
         this.role = role;
         this.reviews = reviews;
     }
-    public UserEntity update(String nickname, String profileImgUrl){
-        this.nickname = nickname;
-        this.profileImgUrl = profileImgUrl;
-        return this;
-    }
 
     public String getRoleKey(){
         return this.role.name();
