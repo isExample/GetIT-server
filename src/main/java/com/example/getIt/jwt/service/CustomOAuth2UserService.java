@@ -49,7 +49,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         UserEntity user = userRepository.findByEmail(attributes.getEmail())
                 .map(entity -> {
                     try {
-                        return change(entity, attributes, registrationId);
+                        if(!entity.getProvider().equals(registrationId)){
+                            throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);
+                        }
                     } catch (BaseException e) {
                         e.printStackTrace();
                     }
@@ -57,13 +59,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 })
                 .orElse(attributes.toEntity());
         return userRepository.save(user);
-
-    }
-
-    private UserEntity change(UserEntity user, OAuthAttributes attributes, String registrationId) throws BaseException {
-        if(user.getProvider().equals(registrationId)){
-            return user.update(attributes.getNickName(), attributes.getProfileImgUrl());
-        }else throw new BaseException(BaseResponseStatus.DUPLICATE_EMAIL);// base Exception 제공하기
 
     }
 }
