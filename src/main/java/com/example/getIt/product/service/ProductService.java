@@ -282,9 +282,9 @@ public class ProductService {
     }
 
     public ProductDTO.GetDetail getProductDetailList(Document doc) throws BaseException{
-        Elements namecontents = doc.select("div.top_summary_title__15yAr > h2");
-        Elements comAndDatecontents = doc.select("div.top_info_inner__1cEYE > span");
-        Elements contents = doc.select("div.top_summary_title__15yAr > div:nth-child(4) >span");
+        Elements namecontents = doc.select("div.top_summary_title__ViyrM > h2");
+        Elements comAndDatecontents = doc.select("div.top_info_inner__aM_0Z > span");
+        Elements contents = doc.select("div.top_summary_title__ViyrM > div:nth-child(4) >span");
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
