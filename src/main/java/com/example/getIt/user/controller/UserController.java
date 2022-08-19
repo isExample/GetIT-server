@@ -139,14 +139,15 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("/review")
-    public BaseResponse<List<UserDTO.UserReviewList>> getReview(Principal principal){
+    public BaseResponse<List<UserDTO.UserReview>> getReview(Principal principal){
         try{
-            List<UserDTO.UserReviewList> getReviewList = userService.getUserReviewList(principal);
+            List<UserDTO.UserReview> getReviewList = userService.getUserReview(principal);
             return new BaseResponse<>(getReviewList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
 
     @ResponseBody
     @GetMapping("/logout")

@@ -391,4 +391,26 @@ public class UserService {
         Optional<RefreshTokenEntity> byKeyId = this.refreshTokenRepository.findByKeyId(user.getEmail());
         this.refreshTokenRepository.delete(byKeyId.get());
     }
+
+    public List<UserDTO.UserReview> getUserReview(Principal principal) throws BaseException {
+        try{
+            UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
+            List<ReviewEntity> products = reviewRepository.findAllByUserIdx(userEntity);
+            List<UserDTO.UserReview> reviewList = new ArrayList<>();
+
+            for(ReviewEntity temp : products){
+                ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
+                UserDTO.UserReview review = new UserDTO.UserReview();
+                review.setReview(temp.getReview());
+                review.setProductImgUrl(reviewProductInfo.getImage());
+                review.setProductName(reviewProductInfo.getName());
+                review.setProductId(reviewProductInfo.getProductId());
+                reviewList.add(review);
+            }
+            return reviewList;
+        }catch (Exception e){
+            System.out.println("Error: "+e);
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
 }
