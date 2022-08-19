@@ -38,7 +38,7 @@ public class MainViewController {
     }*/
 
     @ResponseBody
-    @GetMapping("/findspec")
+    @PostMapping("/findspec")
     public BaseResponse<List<SpecDTO.GetSpec>> getFindSpec(@RequestBody SpecDTO.FindSpec spec) {
         List<SpecDTO.GetSpec> getSpecResults = this.productService.getSpecList(spec);
         return new BaseResponse<>(getSpecResults);
