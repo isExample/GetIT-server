@@ -14,7 +14,7 @@ public class SpecDTO {
         private String type;
         private String foruse;
         private String forprice;
-        private String job;
+        private String plus;
         private String productImg;
         private String productName;
         private String brand;
