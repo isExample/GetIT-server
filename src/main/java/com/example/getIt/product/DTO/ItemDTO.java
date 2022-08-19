@@ -8,13 +8,13 @@ import org.json.JSONObject;
 @Getter
 public class ItemDTO {
     private String title; // 이름
-    private String link;
+    private String productId;
     private String image;
     private int lprice;
 
     public ItemDTO(JSONObject itemJson) {
         this.title = itemJson.getString("title");
-        this.link = itemJson.getString("link");
+        this.productId = itemJson.getString("productId");
         this.image = itemJson.getString("image");
         this.lprice = itemJson.getInt("lprice");
     }

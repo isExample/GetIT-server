@@ -278,15 +278,20 @@ public class ProductService {
         return null;
     }
 
-    public ProductDTO.GetDetail getProductDetailList(Document doc) throws BaseException{
+    public ProductDTO.GetDetail getProductDetailList(Document doc) throws BaseException, IOException {
         Elements namecontents = doc.select("div.top_summary_title__ViyrM > h2");
         Elements comAndDatecontents = doc.select("div.top_info_inner__aM_0Z > span");
         Elements contents = doc.select("div.top_summary_title__ViyrM > div:nth-child(4) >span");
+
+        Elements link = doc.select("head > meta:nth-child(8)");
+        String url = link.attr("content");
+
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
         productDetail.setName(namecontents.text());
+        productDetail.setLink(url);
         //productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
         //productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
         for (int i = 0; i < contents.size(); i++) {
