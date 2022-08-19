@@ -89,4 +89,15 @@ public class UserDTO {
     public static class UserProfile {
         private String nickName;
     }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserReview{
+        private String review;
+        private String productName;
+        private String productImgUrl;
+        private String productId;
+    }
 }
