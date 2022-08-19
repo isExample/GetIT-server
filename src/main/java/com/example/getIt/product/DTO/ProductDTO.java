@@ -110,6 +110,7 @@ public class ProductDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class GetDetail {
         private String name;
+        private String link;
         private String brand;
         private String date;
         private String cpu;
