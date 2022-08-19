@@ -2,9 +2,6 @@ package com.example.getIt.product.controller;
 
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.DTO.SpecDTO;
-import com.example.getIt.product.entity.SpecEntity;
-import com.example.getIt.product.repository.ProductRepository;
-import com.example.getIt.product.repository.SpecRepository;
 import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
@@ -17,8 +14,6 @@ import java.util.List;
 public class MainViewController {
 
     private ProductService productService;
-    private ProductRepository productRepository;
-    private SpecRepository specRepository;
 
     public MainViewController(ProductService productService){
         this.productService = productService;
@@ -35,16 +30,19 @@ public class MainViewController {
         }
     }
 
-    @ResponseBody
+    /*@ResponseBody
     @PostMapping("/savespec")
     public BaseResponse<SpecEntity> specsave(@RequestBody SpecDTO.FindSpec findspec){
         SpecEntity specEntity = this.productService.specsave(findspec);
         return new BaseResponse<>(specEntity);
-    }
+    }*/
+
     @ResponseBody
     @GetMapping("/findspec")
     public BaseResponse<List<SpecDTO.GetSpec>> getFindSpec(@RequestBody SpecDTO.FindSpec spec) {
-        List<SpecDTO.GetSpec> getSpecResults = ProductService.getSpecList(spec);
+        List<SpecDTO.GetSpec> getSpecResults = this.productService.getSpecList(spec);
         return new BaseResponse<>(getSpecResults);
     }
 }
+
+

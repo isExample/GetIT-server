@@ -1,7 +1,6 @@
 package com.example.getIt.product.service;
 
 
-import com.example.getIt.config.Signatures;
 import com.example.getIt.product.DTO.ProductDTO;
 import com.example.getIt.product.DTO.SpecDTO;
 import com.example.getIt.product.entity.*;
@@ -22,13 +21,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
@@ -290,8 +284,8 @@ public class ProductService {
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
         productDetail.setName(namecontents.text());
-        productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
-        productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
+        //productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
+        //productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
         for (int i = 0; i < contents.size(); i++) {
             productinfo[i] = contents.get(i).text();
             content[i] = productinfo[i].substring(productinfo[i].lastIndexOf(":")+2);
@@ -568,7 +562,7 @@ public class ProductService {
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
-        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndJob(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getJob());
+        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
         List<SpecDTO.GetSpec> specList = new ArrayList<>();
 
         for(SpecEntity i : specEntity){
@@ -582,12 +576,12 @@ public class ProductService {
         }
         return specList;
     }
-    public SpecEntity specsave(SpecDTO.FindSpec spec){
+    /*public SpecEntity specsave(SpecDTO.FindSpec spec){
         SpecEntity specEntity = SpecEntity.builder()
                 .type(spec.getType())
                 .foruse(spec.getForuse())
                 .forprice(spec.getForprice())
-                .job(spec.getJob())
+                .plus(spec.getPlus())
                 .productImg(spec.getProductImg())
                 .productName(spec.getProductName())
                 .brand(spec.getBrand())
@@ -596,7 +590,7 @@ public class ProductService {
                 .build();
         specRepository.save(specEntity);
         return specEntity;
-    }
+    }*/
 
     public void deleteReview(Principal principal, Long reviewIdx) throws BaseException {
         if(principal.equals(null)){

@@ -17,12 +17,12 @@ public class SpecEntity {
 
     @Column(nullable = false, length = 20)
     private String type;
-    @Column(nullable = false, length = 20)
-    private String foruse;
-    @Column(nullable = false, length = 150)
-    private String forprice;
     @Column(length = 20)
-    private String job;
+    private String foruse;
+    @Column(length = 150)
+    private String forprice;
+    @Column(length = 150)
+    private String plus;
     @Column(length = 150)
     private String productImg;
     @Column(length = 100)
@@ -35,11 +35,11 @@ public class SpecEntity {
     private String productId;
 
     @Builder
-    public SpecEntity(String type, String foruse, String forprice, String job, String productImg, String productName, String brand, String price, String productId){
+    public SpecEntity(String type, String foruse, String forprice, String plus, String productImg, String productName, String brand, String price, String productId){
         this.type = type;
         this.foruse = foruse;
         this.forprice = forprice;
-        this.job = job;
+        this.plus = plus;
         this.productImg = productImg;
         this.productName = productName;
         this.brand = brand;

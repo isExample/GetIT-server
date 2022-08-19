@@ -1,12 +1,9 @@
 package com.example.getIt.product.controller;
 
 import com.example.getIt.product.DTO.ProductDTO;
-import com.example.getIt.product.entity.SearchEntity;
 import com.example.getIt.product.service.ProductService;
 import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponse;
-import org.json.JSONObject;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
