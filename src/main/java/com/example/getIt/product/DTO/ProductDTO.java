@@ -83,6 +83,7 @@ public class ProductDTO {
     public static class PostsetLike {
         private String productId;
         private String productUrl;
+        private String Image;
         private String name;
         private String brand;
         private String date;
