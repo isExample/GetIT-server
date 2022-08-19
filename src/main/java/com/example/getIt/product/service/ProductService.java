@@ -78,9 +78,9 @@ public class ProductService {
         return getProductDetailList(productIdx);
     }
 
-    public ProductDTO.GetProductItemList getCategoryList(ProductDTO.GetCategoryRes getCategoryRes) throws BaseException {
+    public ProductDTO.GetProductItemList getCategoryList(String type, String requirement) throws BaseException {
         try {
-            String query = getCategoryRes.getType() + "," + getCategoryRes.getRequirement();
+            String query = type + "," + requirement;
             query = query.replace(",null", "");
             JSONArray items = this.naverSearchAPI.itemsList(query);
             if (items.isEmpty()) {
@@ -90,6 +90,8 @@ public class ProductService {
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject eachItem = (JSONObject) items.get(i);
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
+                    product.setName(product.getName().replace("<b>",""));
+                    product.setName(product.getName().replace("</b>",""));
                     product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                     result.add(product);
                 }
@@ -227,6 +229,7 @@ public class ProductService {
                 productEntity = ProductEntity.builder()
                         .productId(product.getProductId())
                         .productUrl(product.getProductUrl())
+                        .image(product.getImage())
                         .name(product.getName())
                         .brand(product.getBrand())
                         .date(product.getCpu())
