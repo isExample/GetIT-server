@@ -54,7 +54,7 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/login")
+    @PostMapping("/login")
     public BaseResponse<TokenDTO> logIn(@RequestBody UserDTO.User user){
         try {
             if(user.getEmail()==null){
