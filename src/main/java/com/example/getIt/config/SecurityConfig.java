@@ -66,6 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/products/list").permitAll()
                 .antMatchers("/products/recommend").permitAll()
                 .antMatchers("/api/search").permitAll()
+                .antMatchers("/users/reissue").permitAll()
                 .anyRequest().authenticated()  // 나머지 API 는 전부 인증 필요
 
 
