@@ -559,7 +559,7 @@ public class ProductService {
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
-        List<SpecEntity> specEntity = specRepository.findAllByTypeOrForuseOrForpriceOrPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
+        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
         List<SpecDTO.GetSpec> specList = new ArrayList<>();
 
         for(SpecEntity i : specEntity){

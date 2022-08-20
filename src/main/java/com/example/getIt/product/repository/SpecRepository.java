@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface SpecRepository extends JpaRepository<SpecEntity, String> {
-    List<SpecEntity> findAllByTypeAndForuseAndForprice(String type, String foruse, String forprice);
     List<SpecEntity> findAllByTypeAndForuseAndForpriceAndPlus(String type, String foruse, String forprice, String plus);
 }
