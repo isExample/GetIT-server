@@ -48,6 +48,7 @@ public class ProductDTO {
         private String output; // 출력
         private String terminal; // 단자
         private String productId;
+        private String productImgUrl; // 상품 이미지 사진
         private String productUrl;
         private String review;
     }

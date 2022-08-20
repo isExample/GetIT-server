@@ -150,7 +150,7 @@ public class ProductService {
         }
     }
 
-    public void postReview(Principal principal, ProductDTO.GetProductReview product, MultipartFile reviewImg) throws BaseException {
+    public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
         if(principal.equals(null)){
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
@@ -163,14 +163,6 @@ public class ProductService {
         }
         if (product.getReview() == null) {
             throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
-        }
-        String reviewProfileUrl = null;
-        if(!reviewImg.isEmpty()){
-            try {
-                reviewProfileUrl = s3Uploader.upload(reviewImg, "review");
-            } catch (IOException e) {
-                throw new BaseException(BaseResponseStatus.POST_REVIEW_IMG_ERROR);
-            }
         }
         ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
         if (productEntity == null) {
@@ -193,13 +185,13 @@ public class ProductService {
                     .hdd(product.getHdd())
                     .output(product.getOutput())
                     .terminal(product.getTerminal())
+                    .image(product.getProductImgUrl())
                     .build();
             this.productRepository.save(newProduct);
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(newProduct)
                     .review(product.getReview())
-                    .reviewImgUrl(reviewProfileUrl)
                     .build();
             this.reviewRepository.save(review);
         } else {
@@ -207,7 +199,6 @@ public class ProductService {
                     .userEntity(optional.get())
                     .productEntity(productEntity)
                     .review(product.getReview())
-                    .reviewImgUrl(reviewProfileUrl)
                     .build();
             this.reviewRepository.save(review);
         }
@@ -510,7 +501,6 @@ public class ProductService {
                 review.setProductIdx(i.getProductIdx().getProductIdx());
                 review.setNickName(i.getUserIdx().getNickname());
                 review.setReview(i.getReview());
-                review.setReviewImgUrl(i.getReviewImgUrl());
                 reviewList.add(review);
             }
             return reviewList;
