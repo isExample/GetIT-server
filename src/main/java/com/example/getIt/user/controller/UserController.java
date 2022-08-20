@@ -108,7 +108,11 @@ public class UserController {
     @ResponseBody
     @PostMapping("/reissue")
     public BaseResponse<TokenDTO> reissue(@RequestBody TokenDTO tokenRequestDto, HttpServletRequest request) { //RequestBody로 Access Token + Refresh Token를 받는다.
-        return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto, request));
+        try {
+            return new BaseResponse<TokenDTO>(userService.reissue(tokenRequestDto, request));
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
     }
 
     /*
