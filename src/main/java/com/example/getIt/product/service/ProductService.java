@@ -18,7 +18,6 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.io.IOException;
@@ -560,7 +559,7 @@ public class ProductService {
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
-        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
+        List<SpecEntity> specEntity = specRepository.findAllByTypeOrForuseOrForpriceOrPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
         List<SpecDTO.GetSpec> specList = new ArrayList<>();
 
         for(SpecEntity i : specEntity){
