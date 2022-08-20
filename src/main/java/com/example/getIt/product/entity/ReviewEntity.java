@@ -27,15 +27,11 @@ public class ReviewEntity {
     @Column(nullable = false, length = 100)
     private String review;
 
-    @Column(length = 500)
-    private String reviewImgUrl;
-
     @Builder
-    public ReviewEntity(UserEntity userEntity, ProductEntity productEntity, String review, String reviewImgUrl){
+    public ReviewEntity(UserEntity userEntity, ProductEntity productEntity, String review){
         this.productIdx = productEntity;
         this.userIdx = userEntity;
         this.review = review;
-        this.reviewImgUrl = reviewImgUrl;
     }
 
 }

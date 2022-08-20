@@ -93,10 +93,9 @@ public class ProductController {
     * */
     @ResponseBody
     @PostMapping("/review")
-    public BaseResponse<String> postReview(Principal principal, @RequestPart(value = "product") ProductDTO.GetProductReview product,
-                                           @RequestPart(value = "reviewImg", required = false) MultipartFile reviewImg){
+    public BaseResponse<String> postReview(Principal principal, @RequestBody ProductDTO.GetProductReview product){
         try {
-            productService.postReview(principal, product, reviewImg);
+            productService.postReview(principal, product);
             return new BaseResponse<>("리뷰 작성을 완료했습니다.");
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());

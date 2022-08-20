@@ -287,7 +287,6 @@ public class UserService {
                 review.setUserIdx(temp.getUserIdx().getUserIdx());
                 review.setReviewIdx(temp.getReviewIdx());
                 review.setReview(temp.getReview());
-                review.setReviewImgUrl(temp.getReviewImgUrl());
                 review.setReviewList(new ProductDTO.GetProduct(
                         reviewProductInfo.getProductIdx(),
                         reviewProductInfo.getName(),
