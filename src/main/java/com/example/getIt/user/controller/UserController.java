@@ -93,9 +93,9 @@ public class UserController {
     * */
     @ResponseBody
     @GetMapping("/mylike")
-    public BaseResponse<UserDTO.UserLikeList> getUserLikeList(Principal principal){
+    public BaseResponse<UserDTO.UserLikeList> getUserLikeList(Principal principal, @RequestParam("type") String type){
         try {
-            UserDTO.UserLikeList userInfo = userService.getUserLikeList(principal);
+            UserDTO.UserLikeList userInfo = userService.getUserLikeList(principal, type);
             return new BaseResponse<>(userInfo);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
