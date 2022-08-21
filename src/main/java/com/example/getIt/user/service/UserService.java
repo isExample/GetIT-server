@@ -162,7 +162,7 @@ public class UserService {
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
             UserEntity userEntity = userEntityOptional.get();
-            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal);
+            UserDTO.UserLikeList userLikeList = this.getUserLikeList(principal, "all");
             List<UserDTO.UserReviewList> userReviewList = this.getUserReviewList(principal);
             return new UserDTO.UserProtected(
                     userEntity.getUserIdx(),
@@ -245,7 +245,7 @@ public class UserService {
         userRepository.save(userEntity);
     }
 
-    public UserDTO.UserLikeList getUserLikeList(Principal principal) throws BaseException{
+    public UserDTO.UserLikeList getUserLikeList(Principal principal, String type) throws BaseException{
         try{
             UserEntity userEntity = userRepository.findByEmail(principal.getName()).get();
             List<UserProductEntity> products = userProductRepository.findAllByUserIdx(userEntity);
@@ -253,16 +253,18 @@ public class UserService {
 
             for(UserProductEntity temp : products){
                 ProductEntity likeProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
-                likeProduct.add(new ProductDTO.GetProduct(
-                        likeProductInfo.getProductIdx(),
-                        likeProductInfo.getName(),
-                        likeProductInfo.getBrand(),
-                        likeProductInfo.getType(),
-                        likeProductInfo.getImage(),
-                        likeProductInfo.getLowestprice(),
-                        likeProductInfo.getProductId(),
-                        likeProductInfo.getProductUrl()
-                ));
+                if(type.equals("all") || likeProductInfo.getType().contains(type)){
+                    likeProduct.add(new ProductDTO.GetProduct(
+                            likeProductInfo.getProductIdx(),
+                            likeProductInfo.getName(),
+                            likeProductInfo.getBrand(),
+                            likeProductInfo.getType(),
+                            likeProductInfo.getImage(),
+                            likeProductInfo.getLowestprice(),
+                            likeProductInfo.getProductId(),
+                            likeProductInfo.getProductUrl()
+                    ));
+                }
             }
 
             return new UserDTO.UserLikeList(
