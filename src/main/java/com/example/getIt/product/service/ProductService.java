@@ -93,8 +93,8 @@ public class ProductService {
                 for (int i = 0; i < items.length(); i++) {
                     JSONObject eachItem = (JSONObject) items.get(i);
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
-                    product.setName(product.getName().replace("<b>",""));
-                    product.setName(product.getName().replace("</b>",""));
+                    product.setName(product.getName().replace("<b>", ""));
+                    product.setName(product.getName().replace("</b>", ""));
                     product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                     result.add(product);
                 }
@@ -154,7 +154,7 @@ public class ProductService {
     }
 
     public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
-        if(principal.equals(null)){
+        if (principal.equals(null)) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
@@ -607,7 +607,7 @@ public class ProductService {
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
-        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
+        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceOrPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
         List<SpecDTO.GetSpec> specList = new ArrayList<>();
 
         for(SpecEntity i : specEntity){
