@@ -71,6 +71,7 @@ public class ProductService {
         this.recommend_secretKey = recommend_secretKey;
         this.s3Uploader = s3Uploader;
     }
+
     public List<ProductDTO.GetProduct> getProductAll() throws BaseException {
         List<ProductDTO.GetProduct> getProducts = this.productRepository.findByOrderByCreatedAt();
         return getProducts;
@@ -244,24 +245,24 @@ public class ProductService {
             }
             UserEntity userEntity = this.userRepository.findByEmail(principal.getName()).get();
             UserProductEntity userProductEntity = this.userProductRepository.findAllByUserIdxAndProductIdx(userEntity, productEntity);
-            if(userProductEntity == null){
+            if (userProductEntity == null) {
                 UserProductEntity like = UserProductEntity.builder()
                         .userEntity(userEntity)
                         .productEntity(productEntity)
                         .build();
                 this.userProductRepository.save(like);
                 return "좋아요 목록에 추가되었습니다.";
-            }else{
+            } else {
                 this.userProductRepository.deleteByUserProductIdx(userProductEntity.getUserProductIdx());
                 return "좋아요를 취소하였습니다.";
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 
-    public ProductDTO.GetDetail getProductDetailList(String productIdx) throws BaseException{
+    public ProductDTO.GetDetail getProductDetailList(String productIdx) throws BaseException {
         final String url = "https://search.shopping.naver.com/catalog/" + productIdx;
         try {
             Document doc = Jsoup.connect(url).get();
@@ -275,221 +276,265 @@ public class ProductService {
         Elements namecontents = doc.select("div.top_summary_title__ViyrM > h2");
         Elements comAndDatecontents = doc.select("div.top_info_inner__aM_0Z > span");
         Elements contents = doc.select("div.top_summary_title__ViyrM > div:nth-child(4) >span");
-
         Elements link = doc.select("head > meta:nth-child(8)");
         String url = link.attr("content");
+        String productIdx = url.substring(42,53);
 
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
+
         productDetail.setName(namecontents.text());
         productDetail.setLink(url);
-        //productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
-        //productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
+        productDetail.setProductIdx(productIdx);
+        productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
+        productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
+
         for (int i = 0; i < contents.size(); i++) {
             productinfo[i] = contents.get(i).text();
-            content[i] = productinfo[i].substring(productinfo[i].lastIndexOf(":")+2);
+            content[i] = productinfo[i].substring(productinfo[i].lastIndexOf(":") + 2);
         }
         for (int j = 0; j < content.length; j++) {
-           if (productinfo[j].contains("스마트폰")) {
+            if (productinfo[j].contains("스마트폰")) {
                 if (productinfo[j].contains("CPU속도")) {
-                   productDetail.setCpurate(content[j]);
-                   DetailDTO.add(productDetail);
+                    productDetail.setCpurate(content[j]);
+                    DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")||productinfo[j].contains("셀러론")||productinfo[j].contains("라이젠")) {
+                if (productinfo[j].contains("코어i") || productinfo[j].contains("M1") || productinfo[j].contains("M2") || productinfo[j].contains("셀러론") || productinfo[j].contains("라이젠")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어종류")){
+                if (productinfo[j].contains("코어종류")) {
                     productDetail.setCore(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("크기")){
+                if (productinfo[j].contains("크기")) {
                     productDetail.setSize(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("램")){
+                if (productinfo[j].contains("램")) {
                     productDetail.setRam(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("무게")){
+                if (productinfo[j].contains("무게")) {
                     productDetail.setWeight(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("품목")){
+                if (productinfo[j].contains("품목")) {
                     productDetail.setType(content[j]);
                     DetailDTO.add(productDetail);
                 }
-
-                if(productinfo[j].contains("내장메모리")){
+                if (productinfo[j].contains("내장메모리")) {
                     productDetail.setInnermemory(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("통신규격")){
+                if (productinfo[j].contains("통신규격")) {
                     productDetail.setCommunication(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("운영체제")){
+                if (productinfo[j].contains("운영체제")) {
                     productDetail.setOs(content[j]);
                     DetailDTO.add(productDetail);
                 }
-
             } else if (productinfo[j].contains("데스크탑")) {
-               if (productinfo[j].contains("CPU속도")) {
-                   productDetail.setCpurate(content[j]);
-                   DetailDTO.add(productDetail);
-               }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                if (productinfo[j].contains("CPU속도")) {
+                    productDetail.setCpurate(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어i") || productinfo[j].contains("M1") || productinfo[j].contains("M2")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어종류")){
-                   productDetail.setCore(content[j]);
-                   DetailDTO.add(productDetail);
+                if (productinfo[j].contains("코어종류")) {
+                    productDetail.setCore(content[j]);
+                    DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("크기")){
+                if (productinfo[j].contains("크기")) {
                     productDetail.setSize(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("램")){
+                if (productinfo[j].contains("램")) {
                     productDetail.setRam(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("무게")){
+                if (productinfo[j].contains("무게")) {
                     productDetail.setWeight(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("품목")){
+                if (productinfo[j].contains("품목")) {
                     productDetail.setType(content[j]);
                     DetailDTO.add(productDetail);
                 }
 
-                if(productinfo[j].contains("SSD")){
+                if (productinfo[j].contains("SSD")) {
                     productDetail.setSsd(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("HDD")){
+                if (productinfo[j].contains("HDD")) {
                     productDetail.setHdd(content[j]);
                     DetailDTO.add(productDetail);
                 }
             } else if (productinfo[j].contains("패드")) {
-               if (productinfo[j].contains("CPU속도")) {
-                   productDetail.setCpurate(content[j]);
-                   DetailDTO.add(productDetail);
-               }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                if (productinfo[j].contains("CPU속도")) {
+                    productDetail.setCpurate(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어i") || productinfo[j].contains("M1") || productinfo[j].contains("M2")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어종류")){
-                   productDetail.setCore(content[j]);
-                   DetailDTO.add(productDetail);
+                if (productinfo[j].contains("코어종류")) {
+                    productDetail.setCore(content[j]);
+                    DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("크기")){
+                if (productinfo[j].contains("크기")) {
                     productDetail.setSize(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("램")){
+                if (productinfo[j].contains("램")) {
                     productDetail.setRam(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("무게")){
+                if (productinfo[j].contains("무게")) {
                     productDetail.setWeight(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("품목")){
+                if (productinfo[j].contains("품목")||productinfo[j].contains("형태")) {
                     productDetail.setType(content[j]);
                     DetailDTO.add(productDetail);
                 }
-
-                if(productinfo[j].contains("내장메모리")){
+                if (productinfo[j].contains("내장메모리")) {
                     productDetail.setInnermemory(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("통신규격")){
+                if (productinfo[j].contains("통신규격")||productinfo[j].contains("인터넷연결")) {
                     productDetail.setCommunication(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("운영체제")){
+                if (productinfo[j].contains("운영체제")||productinfo[j].contains("출시OS")) {
                     productDetail.setOs(content[j]);
                     DetailDTO.add(productDetail);
                 }
-            } else if (productinfo[j].contains("스피커")) {
-                if(productinfo[j].contains("품목")){
+            } else if (productinfo[j].contains("스피커")||productinfo[j].contains("헤드셋")||productinfo[j].contains("헤드폰")||productinfo[j].contains("사운드바")) {
+                if (productinfo[j].contains("품목")||productinfo[j].contains("형태")) {
                     productDetail.setType(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("출력")){
-                    productDetail.setOutput(content[j]);
+                if (productinfo[j].contains("정격출력")||productinfo[j].contains("W")||productinfo[j].contains("출력")) {
+                   productDetail.setOutput(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("단자")){
+                if (productinfo[j].contains("단자")) {
                     productDetail.setTerminal(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("무게")){
+                if (productinfo[j].contains("무게")) {
                     productDetail.setWeight(content[j]);
                     DetailDTO.add(productDetail);
                 }
             } else {
-               if (productinfo[j].contains("CPU속도")) {
-                   productDetail.setCpurate(content[j]);
-                   DetailDTO.add(productDetail);
-               }
-                if (productinfo[j].contains("코어i")||productinfo[j].contains("M1")||productinfo[j].contains("M2")) {
+                if (productinfo[j].contains("CPU속도")) {
+                    productDetail.setCpurate(content[j]);
+                    DetailDTO.add(productDetail);
+                }
+                if (productinfo[j].contains("코어i") || productinfo[j].contains("M1") || productinfo[j].contains("M2")) {
                     productDetail.setCpu(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if (productinfo[j].contains("코어종류")){
-                   productDetail.setCore(content[j]);
-                   DetailDTO.add(productDetail);
+                if (productinfo[j].contains("코어종류")) {
+                    productDetail.setCore(content[j]);
+                    DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("크기")){
+                if (productinfo[j].contains("크기")) {
                     productDetail.setSize(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("램")){
+                if (productinfo[j].contains("램")) {
                     productDetail.setRam(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("무게")){
+                if (productinfo[j].contains("무게")) {
                     productDetail.setWeight(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("품목")){
+                if (productinfo[j].contains("품목")) {
                     productDetail.setType(content[j]);
                     DetailDTO.add(productDetail);
                 }
 
-                if(productinfo[j].contains("내장메모리")){
+                if (productinfo[j].contains("내장메모리")) {
                     productDetail.setInnermemory(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("통신규격")){
+                if (productinfo[j].contains("통신규격")) {
                     productDetail.setCommunication(content[j]);
                     DetailDTO.add(productDetail);
                 }
-                if(productinfo[j].contains("운영체제")){
-                    productDetail.setOs(content[j]);
-                    DetailDTO.add(productDetail);
-                }
-                if(productinfo[j].contains("내장메모리")){
-                    productDetail.setInnermemory(content[j]);
-                    DetailDTO.add(productDetail);
-                }
-                if(productinfo[j].contains("통신규격")){
-                    productDetail.setCommunication(content[j]);
-                    DetailDTO.add(productDetail);
-                }
-                if(productinfo[j].contains("운영체제")){
+                if (productinfo[j].contains("운영체제")) {
                     productDetail.setOs(content[j]);
                     DetailDTO.add(productDetail);
                 }
             }
+
+                if (productDetail.getName() == null) {
+                    productDetail.setName("미상");
+                }
+                if (productDetail.getLink() == null) {
+                    productDetail.setLink("미상");
+                }
+                if (productDetail.getBrand() == null) {
+                    productDetail.setBrand("미상");
+                }
+                if (productDetail.getDate() == null) {
+                    productDetail.setDate("미상");
+                }
+                if (productDetail.getCpu() == null) {
+                    productDetail.setCpu("미상");
+                }
+                if (productDetail.getCpurate() == null) {
+                    productDetail.setCpurate("미상");
+                }
+                if (productDetail.getCore() == null) {
+                    productDetail.setCore("미상");
+                }
+                if (productDetail.getSize() == null) {
+                    productDetail.setSize("미상");
+                }
+                if (productDetail.getRam() == null) {
+                    productDetail.setRam("미상");
+                }
+                if (productDetail.getWeight() == null) {
+                    productDetail.setWeight("미상");
+                }
+                if (productDetail.getType() == null) {
+                    productDetail.setType("미상");
+                }
+                if (productDetail.getInnermemory() == null) {
+                    productDetail.setInnermemory("미상");
+                }
+                if (productDetail.getCommunication() == null) {
+                    productDetail.setCommunication("미상");
+                }
+                if (productDetail.getOs() == null) {
+                    productDetail.setOs("미상");
+                }
+                if (productDetail.getSsd() == null) {
+                    productDetail.setSsd("미상");
+                }
+                if (productDetail.getHdd() == null) {
+                    productDetail.setHdd("미상");
+                }
+                if (productDetail.getOutput() == null) {
+                    productDetail.setOutput("미상");
+                }
+                if (productDetail.getTerminal() == null) {
+                    productDetail.setTerminal("미상");
+                }
         }
         return productDetail;
     }
+
 
     public List<ProductDTO.ReviewList> getReviewList(String productIdx) throws BaseException {
         try{
