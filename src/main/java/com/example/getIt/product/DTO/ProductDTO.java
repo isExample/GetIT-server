@@ -1,6 +1,5 @@
 package com.example.getIt.product.DTO;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import org.json.JSONObject;
 
@@ -108,8 +107,8 @@ public class ProductDTO {
     @Getter
     @Setter
     @ToString
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class GetDetail {
+        private String productIdx;
         private String name;
         private String link;
         private String brand;
