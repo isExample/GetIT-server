@@ -95,7 +95,6 @@ public class ProductService {
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
                     product.setName(product.getName().replace("<b>", ""));
                     product.setName(product.getName().replace("</b>", ""));
-                    product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                     result.add(product);
                 }
                 ProductDTO.GetProductItemList products = new ProductDTO.GetProductItemList(result);
@@ -141,7 +140,6 @@ public class ProductService {
                     for (int j = 0; j < items.length(); j++) {
                         JSONObject eachItem = (JSONObject) items.get(j);
                         ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
-                        product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                         result.add(product);
                     }
                 }
@@ -580,7 +578,6 @@ public class ProductService {
             for(int i=0; i<6; i++){
                 JSONObject eachItem = (JSONObject) items.get(randomNum.get(i));
                 ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
-                product.setProductUrl("https://search.shopping.naver.com/catalog/" + product.getProductUrl());
                 recommProducts.add(product);
             }
             ProductDTO.GetRecommItemList products = new ProductDTO.GetRecommItemList(topic.get(number), recommProducts);
