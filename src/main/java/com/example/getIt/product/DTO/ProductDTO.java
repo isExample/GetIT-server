@@ -66,14 +66,14 @@ public class ProductDTO {
     public static class GetProductList {
         private String imgUrl;
         private String name;
-        private String productUrl;
+        private String lprice;
         private String productId;
 
         public GetProductList(JSONObject jsonObject) {
             this.imgUrl = jsonObject.getString("image");
             this.name = jsonObject.getString("title");
-            this.productUrl = jsonObject.getString("productId");
-            this.productId = this.productUrl;
+            this.lprice = jsonObject.getString("lprice");
+            this.productId = jsonObject.getString("productId");
         }
     }
     @Setter
