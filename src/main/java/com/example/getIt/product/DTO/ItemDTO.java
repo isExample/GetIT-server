@@ -2,10 +2,12 @@ package com.example.getIt.product.DTO;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.json.JSONObject;
 
 @NoArgsConstructor
 @Getter
+@Setter
 public class ItemDTO {
     private String title; // 이름
     private String productId;

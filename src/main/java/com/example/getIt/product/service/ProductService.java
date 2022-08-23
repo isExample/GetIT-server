@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
@@ -275,21 +276,25 @@ public class ProductService {
         Elements comAndDatecontents = doc.select("div.top_info_inner__aM_0Z > span");
         Elements contents = doc.select("div.top_summary_title__ViyrM > div:nth-child(4) >span");
         Elements link = doc.select("head > meta:nth-child(8)");
-        Elements img = doc.select("head > meta:nth-child(7)");
+        Elements img = doc.select("div.style_content__v25xx > div > div.image_thumb_area__fIhuf");
+        Elements imgs = img.select("img");
+
         String url = link.attr("content");
-        String imgurl = img.attr("content");
         String productIdx = url.substring(42,53);
 
         String[] productinfo = new String[contents.size()];
         String[] content = new String[contents.size()];
         List<ProductDTO.GetDetail> DetailDTO = new ArrayList<>();
+        List<String> photoLists = new ArrayList<>();
         ProductDTO.GetDetail productDetail = new ProductDTO.GetDetail();
-        productDetail.setImgurl(imgurl);
+        for (Element e : imgs)
+            photoLists.add(e.attr("src"));
         productDetail.setName(namecontents.text());
         productDetail.setLink(url);
         productDetail.setProductIdx(productIdx);
         productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
         productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
+        productDetail.setPhotolist(photoLists);
 
 
         for (int i = 0; i < contents.size(); i++) {
@@ -607,8 +612,13 @@ public class ProductService {
     }
 
     public static List<SpecDTO.GetSpec> getSpecList(SpecDTO.FindSpec specdto) {
-        List<SpecEntity> specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
-
+        List<SpecEntity> specEntity;
+        if(specdto.getPlus()==null){
+            specEntity = specRepository.findAllByTypeAndForuseAndForprice(specdto.getType(),specdto.getForuse(), specdto.getForprice());
+        }
+        else{
+            specEntity = specRepository.findAllByTypeAndForuseAndForpriceAndPlus(specdto.getType(),specdto.getForuse(), specdto.getForprice(), specdto.getPlus());
+        }
         List<SpecDTO.GetSpec> specList = new ArrayList<>();
 
         for(SpecEntity i : specEntity){

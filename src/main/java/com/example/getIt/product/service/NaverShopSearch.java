@@ -8,10 +8,8 @@ import com.example.getIt.util.BaseException;
 import com.example.getIt.util.BaseResponseStatus;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -89,6 +87,8 @@ public class NaverShopSearch {
         for (int i=0; i<items.length(); i++) {
             JSONObject itemJson = (JSONObject) items.get(i);
             ItemDTO itemDto = new ItemDTO(itemJson);
+            itemDto.setTitle(itemDto.getTitle().replace("<b>", ""));
+            itemDto.setTitle(itemDto.getTitle().replace("</b>", ""));
             itemDtoList.add(itemDto);
 
         }
@@ -101,6 +101,7 @@ public class NaverShopSearch {
         for (int i=0; i<items.length(); i++) {
             JSONObject itemJson = (JSONObject) items.get(i);
             ProductDTO.GetSpecResultList spec = new ProductDTO.GetSpecResultList(itemJson);
+
             ResultList.add(spec);
         }
         return ResultList;
