@@ -111,7 +111,7 @@ public class ProductDTO {
         private String productIdx;
         private String name;
         private String link;
-        private List<String> photolist;
+        private String imgurl;
         private String brand;
         private String date;
         private String cpu;
