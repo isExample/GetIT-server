@@ -22,7 +22,7 @@ public class ProductEntity extends BaseEntity {
     private String productUrl;
     @Column(length = 150)
     private String image;
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 100)
     private String name;
     @Column(length = 50)
     private String brand;

@@ -206,23 +206,25 @@ public class ProductService {
         }
     }
 
-    public String postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
+    public String postLike(Principal principal, ProductDTO.PostsetLike productId) throws BaseException {
         try {
             if (!(this.userRepository.existsByEmail(principal.getName()))) {
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
-            if (product.getProductId() == null) {
+            if (productId.getProductId() == null) {
                 throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
             }
+
+            ProductDTO.GetDetail product = getProductDetailList(productId.getProductId());
             if (product.getType() == null) {
                 throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
             }
-            ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+            ProductEntity productEntity = this.productRepository.findByProductId(product.getProductIdx());
             if (productEntity == null) {
                 productEntity = ProductEntity.builder()
-                        .productId(product.getProductId())
-                        .productUrl(product.getProductUrl())
-                        .image(product.getImage())
+                        .productId(product.getProductIdx())
+                        .productUrl(product.getLink())
+                        .image(product.getPhotolist().get(0))
                         .name(product.getName())
                         .brand(product.getBrand())
                         .date(product.getCpu())
