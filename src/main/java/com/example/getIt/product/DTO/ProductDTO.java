@@ -29,26 +29,7 @@ public class ProductDTO {
     @NoArgsConstructor
     @Builder
     public static class GetProductReview {
-        private String name;
-        private String brand;
-        private String date;
-        private String cpu;
-        private String cpurate;
-        private String core;
-        private String size;
-        private String ram;
-        private String weight;
-        private String type;
-        private String innermemory; // 내장메모리
-        private String communication; // 통신 규격
-        private String os; // 운영 체제
-        private String ssd;
-        private String hdd;
-        private String output; // 출력
-        private String terminal; // 단자
         private String productId;
-        private String productImgUrl; // 상품 이미지 사진
-        private String productUrl;
         private String review;
     }
 
@@ -79,10 +60,10 @@ public class ProductDTO {
     @Setter
     @Getter
     @AllArgsConstructor
+    @NoArgsConstructor
     @Builder
     public static class PostsetLike {
         private String productId;
-        public PostsetLike(){}
     }
 
     @Data
