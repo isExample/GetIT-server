@@ -68,9 +68,9 @@ public class ProductController {
     }
     @ResponseBody
     @GetMapping("/category")
-    public BaseResponse<ProductDTO.GetProductItemList> getCategory(Principal principal, @RequestParam("type") String type,@RequestParam("requirement") String  requirement){
+    public BaseResponse<ProductDTO.GetProductItemList> getCategory(@RequestParam("type") String type,@RequestParam("requirement") String  requirement){
         try {
-            ProductDTO.GetProductItemList getProductList = productService.getCategoryList(principal, type, requirement);
+            ProductDTO.GetProductItemList getProductList = productService.getCategoryList(type, requirement);
             return new BaseResponse<>(getProductList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -144,6 +144,17 @@ public class ProductController {
         try{
             productService.deleteReview(principal, reviewIdx);
             return new BaseResponse<>("리뷰를 삭제했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/isLike")
+    public BaseResponse<ProductDTO.GetIsLike> getCategory(Principal principal, @RequestParam("productId") String  productId){
+        try {
+            ProductDTO.GetIsLike getProductList = productService.getProductIsLike(principal, productId);
+            return new BaseResponse<>(getProductList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }

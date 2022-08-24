@@ -82,7 +82,7 @@ public class ProductService {
         return getProductDetailList(productIdx);
     }
 
-    public ProductDTO.GetProductItemList getCategoryList(Principal principal, String type, String requirement) throws BaseException {
+    public ProductDTO.GetProductItemList getCategoryList(String type, String requirement) throws BaseException {
         try {
             String query = type + "," + requirement;
             query = query.replace(",null", "");
@@ -96,10 +96,6 @@ public class ProductService {
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
                     product.setName(product.getName().replace("<b>", ""));
                     product.setName(product.getName().replace("</b>", ""));
-                    if(principal != null && this.userProductRepository.existsByUserIdxAndProductIdx(this.userRepository.findByEmail(principal.getName()).get(),
-                            this.productRepository.findByProductId(product.getProductId()))){
-                        product.setLike(true);
-                    }
                     result.add(product);
                 }
                 ProductDTO.GetProductItemList products = new ProductDTO.GetProductItemList(result);
@@ -682,6 +678,28 @@ public class ProductService {
         }
         else{
             throw new BaseException(BaseResponseStatus.UNEXIST_REVIEW);
+        }
+    }
+
+    public ProductDTO.GetIsLike getProductIsLike(Principal principal, String productId) throws BaseException {
+        try{
+            if(!(this.userRepository.existsByEmail(principal.getName()))){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+            if(productId.equals(null)){
+                throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+            }
+
+            ProductDTO.GetIsLike result = new ProductDTO.GetIsLike();
+            result.setIsLike(false);
+            if(this.userProductRepository.existsByUserIdxAndProductIdx(this.userRepository.findByEmail(principal.getName()).get(),
+                    this.productRepository.findByProductId(productId))){
+                result.setIsLike(true);
+            }
+
+            return result;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 }
