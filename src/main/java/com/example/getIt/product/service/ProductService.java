@@ -82,7 +82,7 @@ public class ProductService {
         return getProductDetailList(productIdx);
     }
 
-    public ProductDTO.GetProductItemList getCategoryList(String type, String requirement) throws BaseException {
+    public ProductDTO.GetProductItemList getCategoryList(Principal principal, String type, String requirement) throws BaseException {
         try {
             String query = type + "," + requirement;
             query = query.replace(",null", "");
@@ -96,6 +96,10 @@ public class ProductService {
                     ProductDTO.GetProductList product = new ProductDTO.GetProductList(eachItem);
                     product.setName(product.getName().replace("<b>", ""));
                     product.setName(product.getName().replace("</b>", ""));
+                    if(principal != null && this.userProductRepository.existsByUserIdxAndProductIdx(this.userRepository.findByEmail(principal.getName()).get(),
+                            this.productRepository.findByProductId(product.getProductId()))){
+                        product.setLike(true);
+                    }
                     result.add(product);
                 }
                 ProductDTO.GetProductItemList products = new ProductDTO.GetProductItemList(result);

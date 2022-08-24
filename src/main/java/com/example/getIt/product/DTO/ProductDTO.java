@@ -49,6 +49,7 @@ public class ProductDTO {
         private String name;
         private String lprice;
         private String productId;
+        private boolean isLike;
 
         public GetProductList(JSONObject jsonObject) {
             this.imgUrl = jsonObject.getString("image");
