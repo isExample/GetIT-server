@@ -49,7 +49,6 @@ public class ProductDTO {
         private String name;
         private String lprice;
         private String productId;
-        private boolean isLike;
 
         public GetProductList(JSONObject jsonObject) {
             this.imgUrl = jsonObject.getString("image");
@@ -65,6 +64,14 @@ public class ProductDTO {
     @Builder
     public static class PostsetLike {
         private String productId;
+    }
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class GetIsLike {
+        private Boolean isLike;
     }
 
     @Data
