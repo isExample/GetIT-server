@@ -118,9 +118,9 @@ public class ProductController {
 
     @ResponseBody
     @PostMapping("/setLike")
-    public BaseResponse<String> postLike(Principal principal, @RequestBody ProductDTO.PostsetLike product){
+    public BaseResponse<String> postLike(Principal principal, @RequestBody ProductDTO.PostsetLike productId){
         try {
-            String result = this.productService.postLike(principal, product);
+            String result = this.productService.postLike(principal, productId);
             return new BaseResponse<>(result);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
