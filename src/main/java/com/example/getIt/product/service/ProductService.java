@@ -152,7 +152,7 @@ public class ProductService {
         }
     }
 
-    public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
+    public void postReview(Principal principal, ProductDTO.GetProductReview productReview) throws BaseException {
         if (principal.equals(null)) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
@@ -160,17 +160,18 @@ public class ProductService {
         if (optional.isEmpty()) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
-        if (product.getProductId() == null) {
+        if (productReview.getProductId() == null) {
             throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
         }
-        if (product.getReview() == null) {
+        if (productReview.getReview() == null) {
             throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
         }
-        ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+        ProductEntity productEntity = this.productRepository.findByProductId(productReview.getProductId());
         if (productEntity == null) {
+            ProductDTO.GetDetail product = getProductDetailList(productReview.getProductId());
             ProductEntity newProduct = ProductEntity.builder()
-                    .productId(product.getProductId())
-                    .productUrl(product.getProductUrl())
+                    .productId(product.getProductIdx())
+                    .productUrl(product.getLink())
                     .name(product.getName())
                     .brand(product.getBrand())
                     .date(product.getCpu())
@@ -187,20 +188,20 @@ public class ProductService {
                     .hdd(product.getHdd())
                     .output(product.getOutput())
                     .terminal(product.getTerminal())
-                    .image(product.getProductImgUrl())
+                    .image(product.getPhotolist().get(0))
                     .build();
             this.productRepository.save(newProduct);
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(newProduct)
-                    .review(product.getReview())
+                    .review(productReview.getReview())
                     .build();
             this.reviewRepository.save(review);
         } else {
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(productEntity)
-                    .review(product.getReview())
+                    .review(productReview.getReview())
                     .build();
             this.reviewRepository.save(review);
         }
