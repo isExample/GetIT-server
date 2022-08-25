@@ -116,15 +116,27 @@ public class UserController {
     }
 
     /*
-    * 프로필 변경
+    * 프로필 이미지 변경
     * */
     @ResponseBody
-    @PatchMapping("/profile")
-    public BaseResponse<String> patchProfile(Principal principal, @RequestPart(value = "user", required = false) UserDTO.UserProfile user,
+    @PatchMapping("/profileImg")
+    public BaseResponse<String> patchProfile(Principal principal,
                                              @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         try {
-            this.userService.patchProfile(principal, user, profileImg);
-            return new BaseResponse<>("프로필 정보를 변경했습니다.");
+            this.userService.patchProfileImg(principal, profileImg);
+            return new BaseResponse<>("프로필 이미지 정보를 변경했습니다.");
+        } catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @PatchMapping("/profileNickName")
+    public BaseResponse<String> patchProfileNickName(Principal principal,
+                                                     @RequestBody UserDTO.UserProfile user){
+        try {
+            this.userService.patchProfileNickname(principal, user);
+            return new BaseResponse<>("프로필 닉네임 정보를 변경했습니다.");
         } catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
