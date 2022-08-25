@@ -96,6 +96,7 @@ public class UserDTO {
     @NoArgsConstructor
     public static class UserReview{
         private String review;
+        private Long reviewIdx;
         private String productName;
         private String productImgUrl;
         private String productId;

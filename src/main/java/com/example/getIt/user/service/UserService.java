@@ -413,6 +413,7 @@ public class UserService {
             for(ReviewEntity temp : products){
                 ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
                 UserDTO.UserReview review = new UserDTO.UserReview();
+                review.setReviewIdx(temp.getReviewIdx());
                 review.setReview(temp.getReview());
                 review.setProductImgUrl(reviewProductInfo.getImage());
                 review.setProductName(reviewProductInfo.getName());
