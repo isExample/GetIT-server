@@ -148,4 +148,15 @@ public class ProductController {
             return new BaseResponse<>(e.getStatus());
         }
     }
+
+    @ResponseBody
+    @GetMapping("/isLike")
+    public BaseResponse<ProductDTO.GetIsLike> getCategory(Principal principal, @RequestParam("productId") String  productId){
+        try {
+            ProductDTO.GetIsLike getProductList = productService.getProductIsLike(principal, productId);
+            return new BaseResponse<>(getProductList);
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
 }

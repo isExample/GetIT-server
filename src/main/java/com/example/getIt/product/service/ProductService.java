@@ -680,4 +680,26 @@ public class ProductService {
             throw new BaseException(BaseResponseStatus.UNEXIST_REVIEW);
         }
     }
+
+    public ProductDTO.GetIsLike getProductIsLike(Principal principal, String productId) throws BaseException {
+        try{
+            if(!(this.userRepository.existsByEmail(principal.getName()))){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+            if(productId.equals(null)){
+                throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+            }
+
+            ProductDTO.GetIsLike result = new ProductDTO.GetIsLike();
+            result.setIsLike(false);
+            if(this.userProductRepository.existsByUserIdxAndProductIdx(this.userRepository.findByEmail(principal.getName()).get(),
+                    this.productRepository.findByProductId(productId))){
+                result.setIsLike(true);
+            }
+
+            return result;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
+        }
+    }
 }

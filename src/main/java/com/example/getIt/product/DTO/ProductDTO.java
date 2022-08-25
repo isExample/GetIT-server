@@ -65,6 +65,14 @@ public class ProductDTO {
     public static class PostsetLike {
         private String productId;
     }
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Builder
+    public static class GetIsLike {
+        private Boolean isLike;
+    }
 
     @Data
     @Getter
