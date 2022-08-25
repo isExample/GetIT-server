@@ -314,7 +314,7 @@ public class UserService {
             if(user.getNickName().equals(userEntity.getNickname())){
                 throw new BaseException(BaseResponseStatus.SAME_NICKNAME);
             }
-            if(!profileImg.isEmpty()){
+            if(profileImg!=null){
                 String userProfileUrl = null;
                 try {
                     userProfileUrl = s3Uploader.upload(profileImg, "profile");
