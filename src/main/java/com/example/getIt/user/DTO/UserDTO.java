@@ -78,6 +78,7 @@ public class UserDTO {
         private Long userIdx;
         private Long reviewIdx;
         private String review;
+        private String productImgUrl;
         private ProductDTO.GetProduct reviewList;
     }
 
