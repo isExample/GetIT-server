@@ -110,7 +110,7 @@ public class ProductDTO {
         private Long productIdx;
         private String nickName;
         private String review;
-        private String reviewImgUrl;
+        private String profileImgUrl;
     }
 
     @Getter

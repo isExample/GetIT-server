@@ -557,6 +557,7 @@ public class ProductService {
                 review.setProductIdx(i.getProductIdx().getProductIdx());
                 review.setNickName(i.getUserIdx().getNickname());
                 review.setReview(i.getReview());
+                review.setProfileImgUrl(i.getUserIdx().getProfileImgUrl());
                 reviewList.add(review);
             }
             return reviewList;
