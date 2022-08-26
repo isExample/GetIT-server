@@ -1,6 +1,7 @@
 package com.example.getIt.product.entity;
 
 import com.example.getIt.user.entity.UserEntity;
+import com.example.getIt.util.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,7 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @Table(name = "review")
-public class ReviewEntity {
+public class ReviewEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewIdx;
