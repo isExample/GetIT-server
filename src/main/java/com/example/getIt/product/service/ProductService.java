@@ -217,6 +217,11 @@ public class ProductService {
             }
 
             ProductDTO.GetDetail product = getProductDetailList(productId.getProductId());
+            JSONArray items = this.naverSearchAPI.itemsList(product.getName());
+            String lprice = "null";
+            JSONObject eachItem = (JSONObject) items.get(0);
+            lprice = eachItem.getString("lprice");
+
             if (product.getType() == null) {
                 throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
             }
@@ -229,6 +234,7 @@ public class ProductService {
                         .name(product.getName())
                         .brand(product.getBrand())
                         .date(product.getCpu())
+                        .lowestprice(lprice)
                         .cpurate(product.getCpurate())
                         .core(product.getCore())
                         .size(product.getSize())
@@ -283,6 +289,9 @@ public class ProductService {
         Elements imgs = img.select("img");
 
         String url = link.attr("content");
+        if(url.length()<10){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_FIND_URL);
+        }
         String productIdx = url.substring(42,53);
 
         String[] productinfo = new String[contents.size()];
