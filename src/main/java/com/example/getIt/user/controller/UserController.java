@@ -119,7 +119,7 @@ public class UserController {
     * 프로필 이미지 변경
     * */
     @ResponseBody
-    @PatchMapping("/profileImg")
+    @PostMapping("/profileImg")
     public BaseResponse<String> patchProfile(Principal principal,
                                              @RequestPart(value = "profileImg", required = false) MultipartFile profileImg){
         try {
