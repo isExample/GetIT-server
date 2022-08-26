@@ -552,7 +552,7 @@ public class ProductService {
     public List<ProductDTO.ReviewList> getReviewList(String productId) throws BaseException {
         try{
             ProductEntity productEntity = productRepository.findByProductId(productId);
-            List<ReviewEntity> reviewEntity = reviewRepository.findAllByProductIdxOrderByCreatedAtDesc(productEntity);
+            List<ReviewEntity> reviewEntity = reviewRepository.findByProductIdxOrderByCreatedAtDesc(productEntity);
             List<ProductDTO.ReviewList> reviewList = new ArrayList<>();
 
             for(ReviewEntity i : reviewEntity){
