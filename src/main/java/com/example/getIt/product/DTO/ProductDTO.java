@@ -108,7 +108,7 @@ public class ProductDTO {
     @NoArgsConstructor
     public static class ReviewList{
         private Long reviewIdx;
-        private Long productIdx;
+        private String productId;
         private String nickName;
         private String review;
         private String profileImgUrl;

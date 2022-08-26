@@ -229,6 +229,7 @@ public class ProductService {
                         .name(product.getName())
                         .brand(product.getBrand())
                         .date(product.getCpu())
+//                        .lowestprice(pr)
                         .cpurate(product.getCpurate())
                         .core(product.getCore())
                         .size(product.getSize())
@@ -552,13 +553,13 @@ public class ProductService {
     public List<ProductDTO.ReviewList> getReviewList(String productId) throws BaseException {
         try{
             ProductEntity productEntity = productRepository.findByProductId(productId);
-            List<ReviewEntity> reviewEntity = reviewRepository.findAllByProductIdx(productEntity);
+            List<ReviewEntity> reviewEntity = reviewRepository.findAllByProductIdxOrderByCreatedAtDesc(productEntity);
             List<ProductDTO.ReviewList> reviewList = new ArrayList<>();
 
             for(ReviewEntity i : reviewEntity){
                 ProductDTO.ReviewList review = new ProductDTO.ReviewList();
                 review.setReviewIdx(i.getReviewIdx());
-                review.setProductIdx(i.getProductIdx().getProductIdx());
+                review.setProductId(productId);
                 review.setNickName(i.getUserIdx().getNickname());
                 review.setReview(i.getReview());
                 review.setProfileImgUrl(i.getUserIdx().getProfileImgUrl());
