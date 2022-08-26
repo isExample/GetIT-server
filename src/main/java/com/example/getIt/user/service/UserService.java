@@ -418,6 +418,7 @@ public class UserService {
                 review.setProductImgUrl(reviewProductInfo.getImage());
                 review.setProductName(reviewProductInfo.getName());
                 review.setProductId(reviewProductInfo.getProductId());
+                review.setProductPrice(reviewProductInfo.getLowestprice());
                 reviewList.add(review);
             }
             return reviewList;

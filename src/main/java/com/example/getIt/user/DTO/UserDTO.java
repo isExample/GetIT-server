@@ -100,5 +100,6 @@ public class UserDTO {
         private String productName;
         private String productImgUrl;
         private String productId;
+        private String productPrice;
     }
 }
