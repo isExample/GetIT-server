@@ -129,9 +129,9 @@ public class ProductController {
 
     @ResponseBody
     @GetMapping("/review/{productIdx}")
-    public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productIdx") String productIdx){
+    public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productId") String productId){
         try{
-            List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productIdx);
+            List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productId);
             return new BaseResponse<>(getReviewList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
