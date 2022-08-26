@@ -80,6 +80,7 @@ public class ProductDTO {
     @ToString
     public static class GetDetail {
         private String productIdx;
+        private String lprice;
         private String name;
         private String link;
         private List<String> photolist;
