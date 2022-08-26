@@ -280,6 +280,9 @@ public class ProductService {
         Elements imgs = img.select("img");
 
         String url = link.attr("content");
+        if(url.length()<10){
+            throw new BaseException(BaseResponseStatus.FAILED_TO_FIND_URL);
+        }
         String productIdx = url.substring(42,53);
 
         String[] productinfo = new String[contents.size()];
