@@ -128,7 +128,7 @@ public class ProductController {
     }
 
     @ResponseBody
-    @GetMapping("/review/{productIdx}")
+    @GetMapping("/review/{productId}")
     public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productId") String productId){
         try{
             List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productId);
