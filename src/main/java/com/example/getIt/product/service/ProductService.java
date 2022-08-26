@@ -282,6 +282,7 @@ public class ProductService {
         Elements link = doc.select("head > meta:nth-child(8)");
         Elements img = doc.select("div.style_content__v25xx > div > div.image_thumb_area__fIhuf");
         Elements imgs = img.select("img");
+        Elements price = doc.select("div.lowestPrice_price_area__VDBfj > div.lowestPrice_low_price__Ypmmk > em");
 
         String url = link.attr("content");
         if(url.length()<10){
@@ -302,7 +303,7 @@ public class ProductService {
         productDetail.setBrand(comAndDatecontents.get(1).text().substring(4));
         productDetail.setDate(comAndDatecontents.get(3).text().substring(4));
         productDetail.setPhotolist(photoLists);
-
+        productDetail.setLprice(price.text());
 
         for (int i = 0; i < contents.size(); i++) {
             productinfo[i] = contents.get(i).text();
