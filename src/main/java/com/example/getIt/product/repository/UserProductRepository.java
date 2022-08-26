@@ -14,6 +14,7 @@ public interface UserProductRepository extends JpaRepository<UserProductEntity, 
 
     List<UserProductEntity> findAllByUserIdx(UserEntity userIdx);
     UserProductEntity findAllByUserIdxAndProductIdx(UserEntity userIdx, ProductEntity productIdx);
+    boolean existsByUserIdxAndProductIdx(UserEntity userIdx, ProductEntity productIdx);
     @Transactional
     void deleteByUserProductIdx(Long userProductIdx);
 }

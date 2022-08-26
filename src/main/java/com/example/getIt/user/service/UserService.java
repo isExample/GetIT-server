@@ -287,6 +287,7 @@ public class UserService {
                 ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
                 UserDTO.UserReviewList review = new UserDTO.UserReviewList();
                 review.setUserIdx(temp.getUserIdx().getUserIdx());
+                review.setProductImgUrl(temp.getProductIdx().getImage());
                 review.setReviewIdx(temp.getReviewIdx());
                 review.setReview(temp.getReview());
                 review.setReviewList(new ProductDTO.GetProduct(
@@ -307,28 +308,38 @@ public class UserService {
         }
     }
 
-    public void patchProfile(Principal principal, UserDTO.UserProfile user, MultipartFile profileImg) throws BaseException {
+    public void patchProfileImg(Principal principal, MultipartFile profileImg) throws BaseException {
         Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
         if(optional.isPresent()){
+            if(profileImg==null){
+                throw new BaseException(BaseResponseStatus.DO_NOT_HAVE_IMG);
+            }
             UserEntity userEntity = optional.get();
-            if(user.getNickName().equals(userEntity.getNickname())){
-                throw new BaseException(BaseResponseStatus.SAME_NICKNAME);
+            String userProfileUrl = null;
+            try {
+                userProfileUrl = s3Uploader.upload(profileImg, "profile");
+            } catch (IOException e) {
+                throw new BaseException(BaseResponseStatus.PATCH_PROFILE_IMG_ERROR);
             }
-            if(!profileImg.isEmpty()){
-                String userProfileUrl = null;
-                try {
-                    userProfileUrl = s3Uploader.upload(profileImg, "profile");
-                } catch (IOException e) {
-                    throw new BaseException(BaseResponseStatus.PATCH_PROFILE_IMG_ERROR);
-                }
-                userEntity.changeProfileImgUrl(userProfileUrl);
-            }
-            if(user.getNickName()!=null){
-                userEntity.changeNickName(user.getNickName());
-            }
+            userEntity.changeProfileImgUrl(userProfileUrl);
             userRepository.save(userEntity);
         }else{
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+        }
+    }
+
+    public void patchProfileNickname(Principal principal, UserDTO.UserProfile user) throws BaseException{
+        Optional<UserEntity> optional = this.userRepository.findByEmail(principal.getName());
+        if(optional.isPresent()) {
+            if(user.getNickName()==null){
+                throw new BaseException(BaseResponseStatus.DO_NOT_HAVE_NICKNAME);
+            }
+            UserEntity userEntity = optional.get();
+            if (user.getNickName().equals(userEntity.getNickname())) {
+                throw new BaseException(BaseResponseStatus.SAME_NICKNAME);
+            }
+            userEntity.changeNickName(user.getNickName());
+            userRepository.save(userEntity);
         }
     }
 
@@ -402,10 +413,12 @@ public class UserService {
             for(ReviewEntity temp : products){
                 ProductEntity reviewProductInfo = productRepository.findAllByProductIdx(temp.getProductIdx().getProductIdx());
                 UserDTO.UserReview review = new UserDTO.UserReview();
+                review.setReviewIdx(temp.getReviewIdx());
                 review.setReview(temp.getReview());
                 review.setProductImgUrl(reviewProductInfo.getImage());
                 review.setProductName(reviewProductInfo.getName());
                 review.setProductId(reviewProductInfo.getProductId());
+                review.setProductPrice(reviewProductInfo.getLowestprice());
                 reviewList.add(review);
             }
             return reviewList;

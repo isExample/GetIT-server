@@ -152,7 +152,7 @@ public class ProductService {
         }
     }
 
-    public void postReview(Principal principal, ProductDTO.GetProductReview product) throws BaseException {
+    public void postReview(Principal principal, ProductDTO.GetProductReview productReview) throws BaseException {
         if (principal.equals(null)) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
@@ -160,17 +160,18 @@ public class ProductService {
         if (optional.isEmpty()) {
             throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
         }
-        if (product.getProductId() == null) {
+        if (productReview.getProductId() == null) {
             throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
         }
-        if (product.getReview() == null) {
+        if (productReview.getReview() == null) {
             throw new BaseException(BaseResponseStatus.POST_REVEIW_EMPTY);
         }
-        ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+        ProductEntity productEntity = this.productRepository.findByProductId(productReview.getProductId());
         if (productEntity == null) {
+            ProductDTO.GetDetail product = getProductDetailList(productReview.getProductId());
             ProductEntity newProduct = ProductEntity.builder()
-                    .productId(product.getProductId())
-                    .productUrl(product.getProductUrl())
+                    .productId(product.getProductIdx())
+                    .productUrl(product.getLink())
                     .name(product.getName())
                     .brand(product.getBrand())
                     .date(product.getCpu())
@@ -187,42 +188,44 @@ public class ProductService {
                     .hdd(product.getHdd())
                     .output(product.getOutput())
                     .terminal(product.getTerminal())
-                    .image(product.getProductImgUrl())
+                    .image(product.getPhotolist().get(0))
                     .build();
             this.productRepository.save(newProduct);
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(newProduct)
-                    .review(product.getReview())
+                    .review(productReview.getReview())
                     .build();
             this.reviewRepository.save(review);
         } else {
             ReviewEntity review = ReviewEntity.builder()
                     .userEntity(optional.get())
                     .productEntity(productEntity)
-                    .review(product.getReview())
+                    .review(productReview.getReview())
                     .build();
             this.reviewRepository.save(review);
         }
     }
 
-    public String postLike(Principal principal, ProductDTO.PostsetLike product) throws BaseException {
+    public String postLike(Principal principal, ProductDTO.PostsetLike productId) throws BaseException {
         try {
             if (!(this.userRepository.existsByEmail(principal.getName()))) {
                 throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
             }
-            if (product.getProductId() == null) {
+            if (productId.getProductId() == null) {
                 throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
             }
+
+            ProductDTO.GetDetail product = getProductDetailList(productId.getProductId());
             if (product.getType() == null) {
                 throw new BaseException(BaseResponseStatus.POST_TYPE_EMPTY);
             }
-            ProductEntity productEntity = this.productRepository.findByProductId(product.getProductId());
+            ProductEntity productEntity = this.productRepository.findByProductId(product.getProductIdx());
             if (productEntity == null) {
                 productEntity = ProductEntity.builder()
-                        .productId(product.getProductId())
-                        .productUrl(product.getProductUrl())
-                        .image(product.getImage())
+                        .productId(product.getProductIdx())
+                        .productUrl(product.getLink())
+                        .image(product.getPhotolist().get(0))
                         .name(product.getName())
                         .brand(product.getBrand())
                         .date(product.getCpu())
@@ -545,9 +548,9 @@ public class ProductService {
     }
 
 
-    public List<ProductDTO.ReviewList> getReviewList(String productIdx) throws BaseException {
+    public List<ProductDTO.ReviewList> getReviewList(String productId) throws BaseException {
         try{
-            ProductEntity productEntity = productRepository.findAllByProductIdx(Long.parseLong(productIdx));
+            ProductEntity productEntity = productRepository.findByProductId(productId);
             List<ReviewEntity> reviewEntity = reviewRepository.findAllByProductIdx(productEntity);
             List<ProductDTO.ReviewList> reviewList = new ArrayList<>();
 
@@ -557,6 +560,7 @@ public class ProductService {
                 review.setProductIdx(i.getProductIdx().getProductIdx());
                 review.setNickName(i.getUserIdx().getNickname());
                 review.setReview(i.getReview());
+                review.setProfileImgUrl(i.getUserIdx().getProfileImgUrl());
                 reviewList.add(review);
             }
             return reviewList;
@@ -678,6 +682,28 @@ public class ProductService {
         }
         else{
             throw new BaseException(BaseResponseStatus.UNEXIST_REVIEW);
+        }
+    }
+
+    public ProductDTO.GetIsLike getProductIsLike(Principal principal, String productId) throws BaseException {
+        try{
+            if(!(this.userRepository.existsByEmail(principal.getName()))){
+                throw new BaseException(BaseResponseStatus.FAILED_TO_LOGIN);
+            }
+            if(productId.equals(null)){
+                throw new BaseException(BaseResponseStatus.POST_PRODUCTID_EMPTY);
+            }
+
+            ProductDTO.GetIsLike result = new ProductDTO.GetIsLike();
+            result.setIsLike(false);
+            if(this.userProductRepository.existsByUserIdxAndProductIdx(this.userRepository.findByEmail(principal.getName()).get(),
+                    this.productRepository.findByProductId(productId))){
+                result.setIsLike(true);
+            }
+
+            return result;
+        }catch (Exception e){
+            throw new BaseException(BaseResponseStatus.DATABASE_ERROR);
         }
     }
 }

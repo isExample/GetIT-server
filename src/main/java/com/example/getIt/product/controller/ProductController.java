@@ -118,9 +118,9 @@ public class ProductController {
 
     @ResponseBody
     @PostMapping("/setLike")
-    public BaseResponse<String> postLike(Principal principal, @RequestBody ProductDTO.PostsetLike product){
+    public BaseResponse<String> postLike(Principal principal, @RequestBody ProductDTO.PostsetLike productId){
         try {
-            String result = this.productService.postLike(principal, product);
+            String result = this.productService.postLike(principal, productId);
             return new BaseResponse<>(result);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -129,9 +129,9 @@ public class ProductController {
 
     @ResponseBody
     @GetMapping("/review/{productIdx}")
-    public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productIdx") String productIdx){
+    public BaseResponse<List<ProductDTO.ReviewList>> getReview(@PathVariable("productId") String productId){
         try{
-            List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productIdx);
+            List<ProductDTO.ReviewList> getReviewList = productService.getReviewList(productId);
             return new BaseResponse<>(getReviewList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
@@ -144,6 +144,17 @@ public class ProductController {
         try{
             productService.deleteReview(principal, reviewIdx);
             return new BaseResponse<>("리뷰를 삭제했습니다.");
+        }catch (BaseException e) {
+            return new BaseResponse<>(e.getStatus());
+        }
+    }
+
+    @ResponseBody
+    @GetMapping("/isLike")
+    public BaseResponse<ProductDTO.GetIsLike> getCategory(Principal principal, @RequestParam("productId") String  productId){
+        try {
+            ProductDTO.GetIsLike getProductList = productService.getProductIsLike(principal, productId);
+            return new BaseResponse<>(getProductList);
         }catch (BaseException e) {
             return new BaseResponse<>(e.getStatus());
         }
