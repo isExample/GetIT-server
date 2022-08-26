@@ -64,7 +64,7 @@ public class ProductEntity extends BaseEntity {
     @Builder
     public ProductEntity(String productId, String productUrl, String image, String name,
                          String brand, String date, String cpu, String cpurate, String core, String ram, String size,
-                         String weight, String type, String innermemory, String communication, String os, String ssd, String hdd, String output, String terminal){
+                         String weight, String type, String innermemory, String communication, String os, String ssd, String hdd, String output, String terminal, String lowestprice){
         this.productId = productId;
         this.productUrl = productUrl;
         this.type = type;
