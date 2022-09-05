@@ -18,7 +18,7 @@
 
 <br>
 
-## Select Stack
+## Backend Select Stack
 * Spring boot version 2.6.2
 * Gradle 
 * Spring boot Security jwt
@@ -31,7 +31,16 @@
 <br>
 
 ## IDE
+* Android Studio
 * Intellij
+
+<br>
+
+
+## Frontend Developer
+||박희경|김예진|장유진|
+|---|---|---|---|
+|Github|<A href = "https://github.com/heekyoung2000"> heekyoung2000 </A>|<A href = "https://github.com/yejin9858"> yejin9858 </A>|<A href = "https://github.com/wkdyujin"> wkdyujin </A>|
 
 <br>
 
