@@ -18,6 +18,15 @@
 
 <br>
 
+## Frontend Select Stack
+* Android Studio 2021.1.1
+* kotlin 1.4.32
+* Retrofit 2.9.0
+* okHttp 4.9.0
+* Glide 4.11.0
+
+<br>
+
 ## Backend Select Stack
 * Spring boot version 2.6.2
 * Gradle 
