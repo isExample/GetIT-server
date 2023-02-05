@@ -14,7 +14,7 @@
 <br>
 
 ## GetIT Information
-<A href = "https://bedecked-distance-9a3.notion.site/IT-4a6da225dba942cd9e6135824881f9bf"> Notion Page </A> | <A href = "https://typical-rosehip-a45.notion.site/IT-4460f8688f7b4f80ae8164cca7e96469"> Poster Page </A> 
+<A href = "https://typical-rosehip-a45.notion.site/IT-IT-0e731f8b5cbc414da512eefa25d16f69"> Notion Page </A> | <A href = "https://typical-rosehip-a45.notion.site/IT-4460f8688f7b4f80ae8164cca7e96469"> Poster Page </A> 
 
 <br>
 
