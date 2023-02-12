@@ -12,6 +12,8 @@
  한 몸처럼 사용하는 전자제품인데, 스스로 `성능`, `제품군`들을 비교하며 `합리적인 가격에 구매`할 수 없을까?와 같은 고민을 하게 되었고, 이와 같은 일상 생활 속 불편함을 해결하고 싶었습니다. 그 고민 끝에 탄생한 서비스가 바로 **겟IT**입니다.
  
 <br>
+<img src = "https://github.com/isExample/GetIT-server/blob/main/getit_poster.png">
+<br>
 
 ## GetIT Information
 <A href = "https://typical-rosehip-a45.notion.site/IT-IT-0e731f8b5cbc414da512eefa25d16f69"> Notion Page </A> | <A href = "https://typical-rosehip-a45.notion.site/IT-4460f8688f7b4f80ae8164cca7e96469"> Poster Page </A> 
